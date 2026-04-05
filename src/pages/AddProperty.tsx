@@ -62,7 +62,8 @@ export default function AddProperty() {
       toast.success("تم إضافة العقار بنجاح! سيتم مراجعته من الإدارة.");
       navigate("/dashboard");
     } catch (err: any) {
-      toast.error(err.message || "حدث خطأ");
+      console.error("Add property error:", err);
+      toast.error(err.message || "حدث خطأ أثناء إضافة العقار");
     } finally {
       setLoading(false);
     }
