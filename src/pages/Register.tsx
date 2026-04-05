@@ -6,25 +6,29 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
+import { Loader2 } from "lucide-react";
 
 export default function Register() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (password.length < 6) {
+      toast.error("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
+      return;
+    }
     setLoading(true);
     try {
-      await signUp(email, password, fullName, phoneNumber);
+      await signUp(phoneNumber, password, fullName, phoneNumber);
       toast.success("تم إنشاء الحساب بنجاح");
       navigate("/");
-    } catch (err: any) {
-      toast.error(err.message || "خطأ في التسجيل");
+    } catch {
+      toast.error("حدث خطأ في التسجيل. تأكد أن رقم الهاتف غير مستخدم.");
     } finally {
       setLoading(false);
     }
@@ -46,18 +50,14 @@ export default function Register() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">رقم الهاتف</label>
-                <Input value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} required />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">البريد الإلكتروني</label>
-                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <Input type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="0116458724" required />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">كلمة المرور</label>
                 <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "جاري التسجيل..." : "تسجيل"}
+                {loading ? <><Loader2 className="h-4 w-4 animate-spin ml-2" />جاري التسجيل...</> : "تسجيل"}
               </Button>
             </form>
             <p className="text-center text-sm mt-4 text-muted-foreground">

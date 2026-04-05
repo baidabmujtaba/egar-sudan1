@@ -5,13 +5,15 @@ import type { Tables } from "@/integrations/supabase/types";
 
 type Profile = Tables<"profiles">;
 
+const phoneToEmail = (phone: string) => `${phone.replace(/\s+/g, "")}@egark.app`;
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
-  signUp: (email: string, password: string, fullName: string, phoneNumber: string) => Promise<void>;
-  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (phone: string, password: string, fullName: string, phoneNumber: string) => Promise<void>;
+  signIn: (phone: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   isAdmin: boolean;
 }
@@ -59,9 +61,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string, phoneNumber: string) => {
+  const signUp = async (phone: string, password: string, fullName: string, phoneNumber: string) => {
     const { error } = await supabase.auth.signUp({
-      email,
+      email: phoneToEmail(phone),
       password,
       options: {
         data: { full_name: fullName, phone_number: phoneNumber },
@@ -70,8 +72,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
   };
 
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const signIn = async (phone: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: phoneToEmail(phone),
+      password,
+    });
     if (error) throw error;
   };
 
