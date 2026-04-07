@@ -71,7 +71,7 @@ export default function PropertyDetails() {
             <a href={`tel:${cleanPhone}`} className="flex-1">
               <Button variant="outline" className="w-full"><Phone className="h-4 w-4 ml-2" />اتصال بالمعلن</Button>
             </a>
-            <a href={`https://wa.me/${waPhone}`} target="_blank" rel="noopener noreferrer" className="flex-1">
+            <a href={`https://wa.me/${waPhone}?text=${encodeURIComponent(`مرحباً، أستفسر عن العقار: ${property.title}\nالسعر: ${property.price.toLocaleString()} ج.س\nالموقع: ${property.location}${images.length > 0 ? `\nالصورة: ${images[0].image_url}` : ""}\n\nرابط العقار: ${window.location.href}`)}`} target="_blank" rel="noopener noreferrer" className="flex-1">
               <Button variant="default" className="w-full"><MessageCircle className="h-4 w-4 ml-2" />واتساب المعلن</Button>
             </a>
           </div>

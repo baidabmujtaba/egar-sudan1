@@ -36,7 +36,7 @@ export default function SharedHousingCard({ title, price, location, gender, avai
           <a href={`tel:${cleanPhone}`} className="flex-1">
             <Button variant="outline" size="sm" className="w-full"><Phone className="h-4 w-4 ml-1" />اتصال</Button>
           </a>
-          <a href={`https://wa.me/${waPhone}`} target="_blank" rel="noopener noreferrer" className="flex-1">
+          <a href={`https://wa.me/${waPhone}?text=${encodeURIComponent(`مرحباً، أستفسر عن السكن المشترك: ${title}\nالسعر: ${price.toLocaleString()} ج.س\nالموقع: ${location}`)}`} target="_blank" rel="noopener noreferrer" className="flex-1">
             <Button variant="default" size="sm" className="w-full"><MessageCircle className="h-4 w-4 ml-1" />واتساب</Button>
           </a>
         </div>
