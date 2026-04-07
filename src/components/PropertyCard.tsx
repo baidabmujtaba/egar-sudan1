@@ -42,7 +42,7 @@ export default function PropertyCard({ id, title, price, location, property_type
         <a href={`tel:${cleanPhone}`} className="flex-1" onClick={e => e.stopPropagation()}>
           <Button variant="outline" size="sm" className="w-full"><Phone className="h-4 w-4 ml-1" />اتصال</Button>
         </a>
-        <a href={`https://wa.me/${waPhone}`} target="_blank" rel="noopener noreferrer" className="flex-1" onClick={e => e.stopPropagation()}>
+        <a href={`https://wa.me/${waPhone}?text=${encodeURIComponent(`مرحباً، أستفسر عن العقار: ${title}\nالسعر: ${price.toLocaleString()} ج.س\nالموقع: ${location}\n\nرابط العقار: ${window.location.origin}/property/${id}`)}`} target="_blank" rel="noopener noreferrer" className="flex-1" onClick={e => e.stopPropagation()}>
           <Button variant="default" size="sm" className="w-full"><MessageCircle className="h-4 w-4 ml-1" />واتساب</Button>
         </a>
       </div>
