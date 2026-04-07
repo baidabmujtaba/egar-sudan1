@@ -3,7 +3,10 @@ import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Phone } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MapPin, Phone, MessageCircle, Headphones } from "lucide-react";
+
+const SUPPORT_PHONE = "249116458724";
 
 export default function PropertyDetails() {
   const { id } = useParams();
@@ -28,12 +31,13 @@ export default function PropertyDetails() {
   if (!property) return <div className="min-h-screen bg-background"><Navbar /><div className="text-center py-20 text-muted-foreground">العقار غير موجود</div></div>;
 
   const images = property.property_images || [];
+  const cleanPhone = property.phone_number.replace(/\s+/g, "");
+  const waPhone = cleanPhone.startsWith("0") ? "249" + cleanPhone.slice(1) : cleanPhone;
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="container py-8 space-y-6 max-w-2xl">
-        {/* Image gallery */}
         {images.length > 0 && (
           <div className="space-y-2">
             <div className="aspect-video rounded-lg overflow-hidden bg-muted">
@@ -61,15 +65,36 @@ export default function PropertyDetails() {
           <div className="flex items-center gap-2 text-muted-foreground">
             <MapPin className="h-4 w-4" /><span>{property.location}</span>
           </div>
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Phone className="h-4 w-4" /><span>{property.phone_number}</span>
+
+          {/* Owner contact CTAs */}
+          <div className="flex gap-2">
+            <a href={`tel:${cleanPhone}`} className="flex-1">
+              <Button variant="outline" className="w-full"><Phone className="h-4 w-4 ml-2" />اتصال بالمعلن</Button>
+            </a>
+            <a href={`https://wa.me/${waPhone}`} target="_blank" rel="noopener noreferrer" className="flex-1">
+              <Button variant="default" className="w-full"><MessageCircle className="h-4 w-4 ml-2" />واتساب المعلن</Button>
+            </a>
           </div>
+
           {property.description && (
             <div>
               <h2 className="font-semibold mb-2">الوصف</h2>
               <p className="text-muted-foreground leading-relaxed">{property.description}</p>
             </div>
           )}
+
+          {/* Support CTA */}
+          <div className="border-t pt-4 space-y-2">
+            <p className="text-sm text-muted-foreground text-center">تحتاج مساعدة؟ تواصل مع الدعم</p>
+            <div className="flex gap-2">
+              <a href={`tel:+${SUPPORT_PHONE}`} className="flex-1">
+                <Button variant="secondary" size="sm" className="w-full"><Headphones className="h-4 w-4 ml-1" />اتصال بالدعم</Button>
+              </a>
+              <a href={`https://wa.me/${SUPPORT_PHONE}`} target="_blank" rel="noopener noreferrer" className="flex-1">
+                <Button variant="secondary" size="sm" className="w-full"><MessageCircle className="h-4 w-4 ml-1" />واتساب الدعم</Button>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
