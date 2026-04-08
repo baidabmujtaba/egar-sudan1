@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
 import PropertyCard from "@/components/PropertyCard";
-import { Search, Home, Users, ArrowLeft } from "lucide-react";
+import { Search, Home, Users, ArrowLeft, LogIn, UserPlus } from "lucide-react";
 
 export default function Index() {
+  const { user } = useAuth();
   const [properties, setProperties] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
@@ -62,10 +64,24 @@ export default function Index() {
             </Link>
             <Link to="/shared-housing">
               <Button variant="secondary" size="lg">
-                <Users className="h-4 w-4 ml-2" />سكن مشترك
+                <Users className="h-4 w-4 ml-2" />شواغر
               </Button>
             </Link>
           </div>
+          {!user && (
+            <div className="flex gap-3 justify-center pt-2">
+              <Link to="/login">
+                <Button size="lg" className="bg-white text-primary hover:bg-white/90">
+                  <LogIn className="h-4 w-4 ml-2" />تسجيل الدخول
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+                  <UserPlus className="h-4 w-4 ml-2" />حساب جديد
+                </Button>
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 

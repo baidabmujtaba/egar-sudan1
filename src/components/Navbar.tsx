@@ -35,7 +35,7 @@ export default function Navbar() {
             <Button variant="ghost" size="sm">العقارات</Button>
           </Link>
           <Link to="/shared-housing">
-            <Button variant="ghost" size="sm">السكن المشترك</Button>
+            <Button variant="ghost" size="sm">شواغر</Button>
           </Link>
           {user ? (
             <>
@@ -43,7 +43,7 @@ export default function Navbar() {
                 <Button variant="ghost" size="sm"><Plus className="h-4 w-4 ml-1" />إضافة عقار</Button>
               </Link>
               <Link to="/add-shared">
-                <Button variant="ghost" size="sm"><Users className="h-4 w-4 ml-1" />إضافة سكن</Button>
+                <Button variant="ghost" size="sm"><Users className="h-4 w-4 ml-1" />إضافة شاغر</Button>
               </Link>
               <Link to="/dashboard">
                 <Button variant="ghost" size="sm"><User className="h-4 w-4 ml-1" />لوحتي</Button>
@@ -72,7 +72,7 @@ export default function Navbar() {
             <Button variant="ghost" className="w-full justify-start">العقارات</Button>
           </Link>
           <Link to="/shared-housing" onClick={() => setOpen(false)}>
-            <Button variant="ghost" className="w-full justify-start">السكن المشترك</Button>
+            <Button variant="ghost" className="w-full justify-start">شواغر</Button>
           </Link>
           {user ? (
             <>
@@ -80,7 +80,7 @@ export default function Navbar() {
                 <Button variant="ghost" className="w-full justify-start"><Plus className="h-4 w-4 ml-2" />إضافة عقار</Button>
               </Link>
               <Link to="/add-shared" onClick={() => setOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start"><Users className="h-4 w-4 ml-2" />إضافة سكن</Button>
+                <Button variant="ghost" className="w-full justify-start"><Users className="h-4 w-4 ml-2" />إضافة شاغر</Button>
               </Link>
               <Link to="/dashboard" onClick={() => setOpen(false)}>
                 <Button variant="ghost" className="w-full justify-start"><User className="h-4 w-4 ml-2" />لوحتي</Button>

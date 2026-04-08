@@ -35,7 +35,7 @@ export default function SharedHousing() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="container py-8 space-y-6">
-        <h1 className="text-2xl font-bold">السكن المشترك</h1>
+        <h1 className="text-2xl font-bold">شواغر</h1>
         <div className="flex gap-3 flex-wrap">
           <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -56,7 +56,7 @@ export default function SharedHousing() {
         {loading ? (
           <div className="text-center py-10 text-muted-foreground">جاري التحميل...</div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-10 text-muted-foreground">لا توجد عروض سكن مشترك</div>
+          <div className="text-center py-10 text-muted-foreground">لا توجد شواغر حالياً</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map(i => <SharedHousingCard key={i.id} {...i} />)}
