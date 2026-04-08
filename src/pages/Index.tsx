@@ -68,6 +68,20 @@ export default function Index() {
               </Button>
             </Link>
           </div>
+          {!user && (
+            <div className="flex gap-3 justify-center pt-2">
+              <Link to="/login">
+                <Button size="lg" className="bg-white text-primary hover:bg-white/90">
+                  <LogIn className="h-4 w-4 ml-2" />تسجيل الدخول
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+                  <UserPlus className="h-4 w-4 ml-2" />حساب جديد
+                </Button>
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
