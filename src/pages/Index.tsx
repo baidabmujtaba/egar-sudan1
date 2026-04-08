@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
 import PropertyCard from "@/components/PropertyCard";
-import { Search, Home, Users, ArrowLeft } from "lucide-react";
+import { Search, Home, Users, ArrowLeft, LogIn, UserPlus } from "lucide-react";
 
 export default function Index() {
+  const { user } = useAuth();
   const [properties, setProperties] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
