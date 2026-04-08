@@ -62,7 +62,7 @@ export default function Index() {
             </Link>
             <Link to="/shared-housing">
               <Button variant="secondary" size="lg">
-                <Users className="h-4 w-4 ml-2" />سكن مشترك
+                <Users className="h-4 w-4 ml-2" />شواغر
               </Button>
             </Link>
           </div>
