@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import { Loader2 } from "lucide-react";
@@ -12,6 +13,7 @@ export default function Register() {
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("tenant");
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
   const navigate = useNavigate();
@@ -24,7 +26,7 @@ export default function Register() {
     }
     setLoading(true);
     try {
-      await signUp(phoneNumber, password, fullName, phoneNumber);
+      await signUp(phoneNumber, password, fullName, phoneNumber, role);
       toast.success("تم إنشاء الحساب بنجاح");
       navigate("/");
     } catch {
@@ -55,6 +57,23 @@ export default function Register() {
               <div>
                 <label className="block text-sm font-medium mb-1">كلمة المرور</label>
                 <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">نوع الحساب</label>
+                <RadioGroup value={role} onValueChange={setRole} className="flex gap-4 mt-2">
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="tenant" id="tenant" />
+                    <label htmlFor="tenant" className="text-sm cursor-pointer">مستأجر</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="owner" id="owner" />
+                    <label htmlFor="owner" className="text-sm cursor-pointer">مالك</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="broker" id="broker" />
+                    <label htmlFor="broker" className="text-sm cursor-pointer">سمسار</label>
+                  </div>
+                </RadioGroup>
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? <><Loader2 className="h-4 w-4 animate-spin ml-2" />جاري التسجيل...</> : "تسجيل"}

@@ -12,7 +12,7 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
-  signUp: (phone: string, password: string, fullName: string, phoneNumber: string) => Promise<void>;
+  signUp: (phone: string, password: string, fullName: string, phoneNumber: string, role?: string) => Promise<void>;
   signIn: (phone: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   isAdmin: boolean;
@@ -61,12 +61,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (phone: string, password: string, fullName: string, phoneNumber: string) => {
+  const signUp = async (phone: string, password: string, fullName: string, phoneNumber: string, role: string = "tenant") => {
     const { error } = await supabase.auth.signUp({
       email: phoneToEmail(phone),
       password,
       options: {
-        data: { full_name: fullName, phone_number: phoneNumber },
+        data: { full_name: fullName, phone_number: phoneNumber, role },
       },
     });
     if (error) throw error;

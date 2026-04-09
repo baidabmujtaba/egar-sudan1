@@ -18,7 +18,7 @@ export default function AddProperty() {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<File[]>([]);
   const [form, setForm] = useState({
-    title: "", price: "", location: "", description: "", phone_number: "", property_type: "شقة",
+    title: "", price: "", location: "", description: "", phone_number: "", property_type: "شقة", currency: "SDG",
   });
 
   const uploadImage = async (file: File): Promise<string> => {
@@ -43,6 +43,7 @@ export default function AddProperty() {
           description: form.description,
           phone_number: form.phone_number,
           property_type: form.property_type,
+          currency: form.currency,
           user_id: user.id,
           status: "pending",
         })
@@ -84,8 +85,19 @@ export default function AddProperty() {
                 <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">السعر (ج.س)</label>
-                <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required />
+                <label className="block text-sm font-medium mb-1">السعر</label>
+                <div className="flex gap-2">
+                  <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required className="flex-1" />
+                  <Select value={form.currency} onValueChange={(v) => setForm({ ...form, currency: v })}>
+                    <SelectTrigger className="w-28">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="SDG">ج.س</SelectItem>
+                      <SelectItem value="USD">دولار</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">الموقع</label>
@@ -97,10 +109,9 @@ export default function AddProperty() {
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="شقة">شقة</SelectItem>
-                    <SelectItem value="منزل">منزل</SelectItem>
-                    <SelectItem value="محل">محل تجاري</SelectItem>
-                    <SelectItem value="مكتب">مكتب</SelectItem>
-                    <SelectItem value="أرض">أرض</SelectItem>
+                    <SelectItem value="عمارة">عمارة</SelectItem>
+                    <SelectItem value="شاغر">شاغر</SelectItem>
+                    <SelectItem value="منزل أرضي">منزل أرضي</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
