@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -6,12 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/Navbar";
 import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
+import { Trash2, Pencil } from "lucide-react";
 
 const statusLabel: Record<string, string> = { pending: "قيد المراجعة", approved: "مقبول" };
 const statusVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = { pending: "secondary", approved: "default" };
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [properties, setProperties] = useState<any[]>([]);
   const [shared, setShared] = useState<any[]>([]);
@@ -61,6 +63,9 @@ export default function Dashboard() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Badge variant={statusVariant[p.status]}>{statusLabel[p.status] || p.status}</Badge>
+                        <Button variant="ghost" size="icon" onClick={() => navigate(`/edit-property/${p.id}`)}>
+                          <Pencil className="h-4 w-4 text-primary" />
+                        </Button>
                         <Button variant="ghost" size="icon" onClick={() => deleteProperty(p.id)}>
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
