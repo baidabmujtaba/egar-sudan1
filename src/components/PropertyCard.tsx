@@ -11,11 +11,13 @@ interface PropertyCardProps {
   location: string;
   property_type: string;
   phone_number: string;
+  currency?: string;
   images?: { image_url: string }[];
 }
 
-export default function PropertyCard({ id, title, price, location, property_type, phone_number, images }: PropertyCardProps) {
+export default function PropertyCard({ id, title, price, location, property_type, phone_number, currency, images }: PropertyCardProps) {
   const firstImage = images?.[0]?.image_url;
+  const currencyLabel = currency === "USD" ? "$" : "ج.س";
   const cleanPhone = phone_number.replace(/\s+/g, "");
   const waPhone = cleanPhone.startsWith("0") ? "249" + cleanPhone.slice(1) : cleanPhone;
 
@@ -32,7 +34,7 @@ export default function PropertyCard({ id, title, price, location, property_type
         </div>
         <CardContent className="p-4 space-y-2">
           <h3 className="font-bold text-lg line-clamp-1">{title}</h3>
-          <p className="text-2xl font-bold text-primary">{price.toLocaleString()} ج.س</p>
+          <p className="text-2xl font-bold text-primary">{price.toLocaleString()} {currencyLabel}</p>
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <MapPin className="h-4 w-4" /><span>{location}</span>
           </div>
