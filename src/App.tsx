@@ -17,6 +17,7 @@ const AddProperty = lazy(() => import("./pages/AddProperty"));
 const AddShared = lazy(() => import("./pages/AddShared"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Admin = lazy(() => import("./pages/Admin"));
+const EditProperty = lazy(() => import("./pages/EditProperty"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -50,6 +51,7 @@ const App = () => (
               <Route path="/add-shared" element={<AddShared />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/edit-property/:id" element={<EditProperty />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
