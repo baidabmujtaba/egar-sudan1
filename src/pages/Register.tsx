@@ -52,7 +52,7 @@ export default function Register() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">رقم الهاتف</label>
-                <Input type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="0116458724" required />
+                <Input type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="أدخل رقم الهاتف" required />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">كلمة المرور</label>
