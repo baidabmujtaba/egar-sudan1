@@ -45,7 +45,7 @@ export default function Login() {
                   type="tel"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="0116458724"
+                  placeholder="أدخل رقم الهاتف"
                   required
                 />
               </div>
