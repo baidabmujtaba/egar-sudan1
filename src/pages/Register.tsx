@@ -71,7 +71,7 @@ export default function Register() {
                   </div>
                   <div className="flex items-center gap-2">
                     <RadioGroupItem value="broker" id="broker" />
-                    <label htmlFor="broker" className="text-sm cursor-pointer">سمسار</label>
+                    <label htmlFor="broker" className="text-sm cursor-pointer">وسيط</label>
                   </div>
                 </RadioGroup>
               </div>
