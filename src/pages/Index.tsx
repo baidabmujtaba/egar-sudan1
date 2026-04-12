@@ -61,7 +61,7 @@ export default function Index() {
               </Button>
             </Link>
             <Link to="/shared-housing">
-              <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
+              <Button size="lg" className="bg-orange-500 text-white hover:bg-orange-600 shadow-lg">
                 <Users className="h-4 w-4 ml-2" />الشواغر
               </Button>
             </Link>
