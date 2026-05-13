@@ -10,13 +10,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ImageUpload from "@/components/ImageUpload";
 import Navbar from "@/components/Navbar";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Video, X } from "lucide-react";
 
 export default function AddProperty() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<File[]>([]);
+  const [video, setVideo] = useState<File | null>(null);
   const [form, setForm] = useState({
     title: "", price: "", location: "", description: "", phone_number: "", property_type: "شقة", currency: "SDG",
   });
@@ -34,6 +35,15 @@ export default function AddProperty() {
     if (!user) return toast.error("يجب تسجيل الدخول أولاً");
     setLoading(true);
     try {
+      let videoUrl: string | null = null;
+      if (video) {
+        if (video.size > 50 * 1024 * 1024) {
+          toast.error("حجم الفيديو يجب أن يكون أقل من 50 ميجا");
+          setLoading(false);
+          return;
+        }
+        videoUrl = await uploadImage(video);
+      }
       const { data: property, error } = await supabase
         .from("properties")
         .insert({
@@ -46,6 +56,7 @@ export default function AddProperty() {
           currency: form.currency,
           user_id: user.id,
           status: "pending",
+          video_url: videoUrl,
         })
         .select()
         .single();
@@ -124,6 +135,31 @@ export default function AddProperty() {
                 <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} />
               </div>
               <ImageUpload files={images} onChange={setImages} />
+              <div className="space-y-2">
+                <label className="block text-sm font-medium">فيديو للعقار (اختياري - حتى 50 ميجا)</label>
+                {video ? (
+                  <div className="flex items-center justify-between rounded-lg border p-3 bg-muted/40">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Video className="h-4 w-4 text-primary shrink-0" />
+                      <span className="text-sm truncate">{video.name}</span>
+                    </div>
+                    <button type="button" onClick={() => setVideo(null)} className="p-1 rounded hover:bg-destructive/10">
+                      <X className="h-4 w-4 text-destructive" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex items-center justify-center gap-2 rounded-lg border-2 border-dashed p-4 cursor-pointer hover:border-primary transition-colors text-sm text-muted-foreground">
+                    <Video className="h-5 w-5" />
+                    <span>اضغط لرفع فيديو</span>
+                    <input
+                      type="file"
+                      accept="video/*"
+                      className="hidden"
+                      onChange={(e) => setVideo(e.target.files?.[0] || null)}
+                    />
+                  </label>
+                )}
+              </div>
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? <><Loader2 className="h-4 w-4 animate-spin ml-2" />جاري الإضافة...</> : "إضافة العقار"}
               </Button>
