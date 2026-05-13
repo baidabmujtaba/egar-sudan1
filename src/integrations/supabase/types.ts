@@ -128,6 +128,7 @@ export type Database = {
           status: string
           title: string
           user_id: string
+          video_url: string | null
         }
         Insert: {
           available_spots: number
@@ -141,6 +142,7 @@ export type Database = {
           status?: string
           title: string
           user_id: string
+          video_url?: string | null
         }
         Update: {
           available_spots?: number
@@ -154,6 +156,7 @@ export type Database = {
           status?: string
           title?: string
           user_id?: string
+          video_url?: string | null
         }
         Relationships: []
       }
