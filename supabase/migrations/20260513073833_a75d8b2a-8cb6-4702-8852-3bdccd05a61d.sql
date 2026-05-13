@@ -1,0 +1,1 @@
+ALTER TABLE public.shared_housing ADD COLUMN IF NOT EXISTS video_url text;
