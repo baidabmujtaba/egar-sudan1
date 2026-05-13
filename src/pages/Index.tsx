@@ -38,7 +38,7 @@ export default function Index() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative min-h-[520px] flex items-center overflow-hidden">
+      <section className="relative min-h-[480px] md:min-h-[600px] lg:min-h-[680px] flex items-center overflow-hidden">
         <img
           src={heroBg}
           alt="عقارات"
@@ -47,21 +47,21 @@ export default function Index() {
           height={1080}
         />
         <div className="absolute inset-0 bg-gradient-to-l from-foreground/80 via-foreground/60 to-foreground/40" />
-        <div className="container relative z-10 py-16 space-y-6">
-          <h1 className="text-3xl md:text-5xl font-extrabold text-primary-foreground leading-tight max-w-lg">
+        <div className="container relative z-10 py-16 md:py-24 space-y-5 md:space-y-7 max-w-6xl">
+          <h1 className="text-3xl md:text-6xl lg:text-7xl font-extrabold text-primary-foreground leading-tight max-w-2xl">
             أسهل طريقة تلقى إيجارك
           </h1>
-          <p className="text-primary-foreground/80 text-lg max-w-md">
-            ابحث عن عقارات وسكن مشترك في السودان بسهولة وأمان
+          <p className="text-primary-foreground/85 text-base md:text-xl max-w-xl">
+            ابحث عن عقارات وسكن مشترك في السودان بسهولة وأمان — كل العروض في مكان واحد
           </p>
-          <div className="flex gap-3 pt-2">
+          <div className="flex flex-wrap gap-3 pt-2">
             <Link to="/properties">
-              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg">
+              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg md:h-12 md:px-8 md:text-base">
                 <Home className="h-4 w-4 ml-2" />تصفح العقارات
               </Button>
             </Link>
             <Link to="/shared-housing">
-              <Button size="lg" className="bg-orange-500 text-white hover:bg-orange-600 shadow-lg">
+              <Button size="lg" className="bg-orange-500 text-white hover:bg-orange-600 shadow-lg md:h-12 md:px-8 md:text-base">
                 <Users className="h-4 w-4 ml-2" />الشواغر
               </Button>
             </Link>
@@ -70,19 +70,19 @@ export default function Index() {
       </section>
 
       {/* Search Bar */}
-      <section className="container -mt-8 relative z-20">
-        <div className="bg-card rounded-xl shadow-lg border p-4 md:p-6 flex flex-col md:flex-row gap-3 items-center">
+      <section className="container -mt-8 md:-mt-12 relative z-20 max-w-5xl">
+        <div className="bg-card rounded-2xl shadow-xl border p-4 md:p-6 flex flex-col md:flex-row gap-3 items-center">
           <div className="relative flex-1 w-full">
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="ابحث عن موقع أو عقار..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pr-10 h-12 text-base"
+              className="pr-10 h-12 md:h-14 text-base"
             />
           </div>
           <Link to="/properties">
-            <Button size="lg" className="w-full md:w-auto h-12 px-8">
+            <Button size="lg" className="w-full md:w-auto h-12 md:h-14 px-8">
               <Search className="h-4 w-4 ml-2" />بحث
             </Button>
           </Link>
@@ -90,29 +90,29 @@ export default function Index() {
       </section>
 
       {/* Stats */}
-      <section className="container py-10">
-        <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto text-center">
+      <section className="container py-10 md:py-14">
+        <div className="grid grid-cols-3 gap-4 md:gap-8 max-w-3xl mx-auto text-center">
           <div>
-            <p className="text-2xl md:text-3xl font-bold text-primary">+{properties.length || 0}</p>
-            <p className="text-sm text-muted-foreground">عقار متاح</p>
+            <p className="text-2xl md:text-4xl font-bold text-primary">+{properties.length || 0}</p>
+            <p className="text-sm md:text-base text-muted-foreground">عقار متاح</p>
           </div>
           <div>
-            <p className="text-2xl md:text-3xl font-bold text-primary">+100</p>
-            <p className="text-sm text-muted-foreground">مستخدم</p>
+            <p className="text-2xl md:text-4xl font-bold text-primary">+100</p>
+            <p className="text-sm md:text-base text-muted-foreground">مستخدم</p>
           </div>
           <div>
-            <p className="text-2xl md:text-3xl font-bold text-primary">24/7</p>
-            <p className="text-sm text-muted-foreground">دعم متواصل</p>
+            <p className="text-2xl md:text-4xl font-bold text-primary">24/7</p>
+            <p className="text-sm md:text-base text-muted-foreground">دعم متواصل</p>
           </div>
         </div>
       </section>
 
       {/* Featured Properties */}
-      <section className="container pb-12 space-y-6">
+      <section className="container pb-12 md:pb-16 space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-primary mb-1">— الأحدث</p>
-            <h2 className="text-2xl font-bold">أحدث العقارات</h2>
+            <h2 className="text-2xl md:text-3xl font-bold">أحدث العقارات</h2>
           </div>
           <Link to="/properties">
             <Button variant="ghost" size="sm">عرض الكل <ArrowLeft className="h-4 w-4 mr-1" /></Button>
@@ -123,7 +123,7 @@ export default function Index() {
         ) : filtered.length === 0 ? (
           <div className="text-center py-10 text-muted-foreground">لا توجد عقارات حالياً</div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-6">
             {filtered.map((p) => (
               <PropertyCard key={p.id} {...p} images={p.property_images} />
             ))}
@@ -132,10 +132,10 @@ export default function Index() {
       </section>
 
       {/* Features */}
-      <section className="bg-muted/50 py-12">
+      <section className="bg-muted/50 py-12 md:py-20">
         <div className="container">
-          <h2 className="text-2xl font-bold text-center mb-8">لماذا EGARK؟</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">لماذا EGARK؟</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             <div className="bg-card rounded-xl p-6 text-center space-y-3 border">
               <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                 <Building className="h-6 w-6 text-primary" />
