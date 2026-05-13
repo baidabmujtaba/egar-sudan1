@@ -37,7 +37,7 @@ export default function PropertyDetails() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container py-8 space-y-6 max-w-2xl">
+      <div className="container py-8 space-y-6 max-w-4xl">
         {images.length > 0 && (
           <div className="space-y-2">
             <div className="aspect-video rounded-lg overflow-hidden bg-muted">
@@ -53,6 +53,15 @@ export default function PropertyDetails() {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {property.video_url && (
+          <div className="space-y-2">
+            <h2 className="font-semibold">فيديو العقار</h2>
+            <div className="aspect-video rounded-lg overflow-hidden bg-black">
+              <video src={property.video_url} controls playsInline className="w-full h-full" />
+            </div>
           </div>
         )}
 
