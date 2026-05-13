@@ -37,10 +37,7 @@ export default function SharedHousingCard({ title, price, location, gender, avai
         )}
         {/* Header */}
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-bold text-base leading-snug line-clamp-2 flex-1">
-            {title}
-            {video_url && !video_url ? null : null}
-          </h3>
+          <h3 className="font-bold text-base leading-snug line-clamp-2 flex-1">{title}</h3>
           <Badge className={`shrink-0 text-[11px] px-2 py-0.5 border ${genderColor[gender] || "bg-secondary text-secondary-foreground"}`}>
             {genderLabel[gender] || gender}
           </Badge>
