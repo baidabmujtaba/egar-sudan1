@@ -32,7 +32,7 @@ export default function AddShared() {
           setLoading(false);
           return;
         }
-        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}-${video.name}`;
+        const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}-${video.name}`;
         const { error: upErr } = await supabase.storage.from("property-images").upload(fileName, video);
         if (upErr) throw upErr;
         videoUrl = supabase.storage.from("property-images").getPublicUrl(fileName).data.publicUrl;
