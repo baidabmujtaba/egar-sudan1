@@ -23,7 +23,8 @@ export default function AddProperty() {
   });
 
   const uploadImage = async (file: File): Promise<string> => {
-    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name}`;
+    if (!user) throw new Error("Not authenticated");
+    const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name}`;
     const { error } = await supabase.storage.from("property-images").upload(fileName, file);
     if (error) throw error;
     const { data } = supabase.storage.from("property-images").getPublicUrl(fileName);
