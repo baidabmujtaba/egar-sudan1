@@ -1,0 +1,1 @@
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS rental_period text NOT NULL DEFAULT 'شهري';
