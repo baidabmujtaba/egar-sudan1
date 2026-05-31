@@ -13,13 +13,15 @@ interface PropertyCardProps {
   property_type: string;
   phone_number: string;
   currency?: string;
+  rental_period?: string;
   video_url?: string | null;
   images?: { image_url: string }[];
 }
 
-export default function PropertyCard({ id, title, price, location, property_type, phone_number, currency, video_url, images }: PropertyCardProps) {
+export default function PropertyCard({ id, title, price, location, property_type, phone_number, currency, rental_period, video_url, images }: PropertyCardProps) {
   const firstImage = images?.[0]?.image_url;
   const currencyLabel = currency === "USD" ? "$" : "ج.س";
+  const periodLabel = rental_period === "يومي" ? "/ يومياً" : rental_period === "أسبوعي" ? "/ أسبوعياً" : "/ شهرياً";
   const cleanPhone = phone_number.replace(/\s+/g, "");
   const waPhone = cleanPhone.startsWith("0") ? "249" + cleanPhone.slice(1) : cleanPhone;
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -88,7 +90,7 @@ export default function PropertyCard({ id, title, price, location, property_type
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <MapPin className="h-3.5 w-3.5" /><span className="line-clamp-1">{location}</span>
           </div>
-          <p className="text-sm pt-1"><span className="font-bold text-foreground">{price.toLocaleString()} {currencyLabel}</span> <span className="text-muted-foreground">/ شهري</span></p>
+          <p className="text-sm pt-1"><span className="font-bold text-foreground">{price.toLocaleString()} {currencyLabel}</span> <span className="text-muted-foreground">{periodLabel}</span></p>
         </Link>
       </div>
       <div className="pt-3 flex gap-2">
@@ -141,7 +143,7 @@ export default function PropertyCard({ id, title, price, location, property_type
           <div className="flex items-center justify-between gap-3 p-4 bg-background">
             <div className="min-w-0">
               <h3 className="font-semibold truncate">{title}</h3>
-              <p className="text-sm text-muted-foreground truncate">{location} · {price.toLocaleString()} {currencyLabel}</p>
+              <p className="text-sm text-muted-foreground truncate">{location} · {price.toLocaleString()} {currencyLabel} {periodLabel}</p>
             </div>
             <Link to={`/property/${id}`}>
               <Button size="sm" className="rounded-full">عرض التفاصيل</Button>
