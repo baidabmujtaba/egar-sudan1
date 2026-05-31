@@ -24,10 +24,21 @@ export default function Navbar() {
           <span className="text-xl font-bold text-gradient">EGARK</span>
         </Link>
 
-        {/* Mobile menu button */}
-        <button className="md:hidden p-2" onClick={() => setOpen(!open)}>
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        {/* Mobile: login button (top-left) + menu */}
+        <div className="md:hidden flex items-center gap-2">
+          {user ? (
+            <Button variant="outline" size="sm" onClick={handleSignOut} className="rounded-full">
+              <LogOut className="h-4 w-4 ml-1" />خروج
+            </Button>
+          ) : (
+            <Link to="/login">
+              <Button size="sm" className="rounded-full">تسجيل الدخول</Button>
+            </Link>
+          )}
+          <button className="p-2" onClick={() => setOpen(!open)} aria-label="القائمة">
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-3">
