@@ -19,7 +19,7 @@ export default function AddProperty() {
   const [images, setImages] = useState<File[]>([]);
   const [video, setVideo] = useState<File | null>(null);
   const [form, setForm] = useState({
-    title: "", price: "", location: "", description: "", phone_number: "", property_type: "شقة", currency: "SDG",
+    title: "", price: "", location: "", description: "", phone_number: "", property_type: "شقة", currency: "SDG", rental_period: "شهري",
   });
 
   const uploadImage = async (file: File): Promise<string> => {
@@ -55,6 +55,7 @@ export default function AddProperty() {
           phone_number: form.phone_number,
           property_type: form.property_type,
           currency: form.currency,
+          rental_period: form.rental_period,
           user_id: user.id,
           status: "pending",
           video_url: videoUrl,
@@ -124,6 +125,17 @@ export default function AddProperty() {
                     <SelectItem value="عمارة">عمارة</SelectItem>
                     <SelectItem value="شاغر">شاغر</SelectItem>
                     <SelectItem value="منزل أرضي">منزل أرضي</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">مدة الإيجار</label>
+                <Select value={form.rental_period} onValueChange={(v) => setForm({ ...form, rental_period: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="يومي">يومي</SelectItem>
+                    <SelectItem value="أسبوعي">أسبوعي</SelectItem>
+                    <SelectItem value="شهري">شهري</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

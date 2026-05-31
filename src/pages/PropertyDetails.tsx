@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Navigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,11 +11,14 @@ const SUPPORT_PHONE = "249116458724";
 
 export default function PropertyDetails() {
   const { id } = useParams();
+  const { user, loading: authLoading } = useAuth();
+  const location = useLocation();
   const [property, setProperty] = useState<any>(null);
   const [activeImage, setActiveImage] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!user) return;
     const fetch = async () => {
       const { data } = await supabase
         .from("properties")
@@ -25,14 +29,18 @@ export default function PropertyDetails() {
       setLoading(false);
     };
     fetch();
-  }, [id]);
+  }, [id, user]);
 
+  if (authLoading) return <div className="min-h-screen bg-background"><Navbar /><div className="text-center py-20 text-muted-foreground">جاري التحميل...</div></div>;
+  if (!user) return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   if (loading) return <div className="min-h-screen bg-background"><Navbar /><div className="text-center py-20 text-muted-foreground">جاري التحميل...</div></div>;
   if (!property) return <div className="min-h-screen bg-background"><Navbar /><div className="text-center py-20 text-muted-foreground">العقار غير موجود</div></div>;
 
   const images = property.property_images || [];
   const cleanPhone = property.phone_number.replace(/\s+/g, "");
   const waPhone = cleanPhone.startsWith("0") ? "249" + cleanPhone.slice(1) : cleanPhone;
+  const currencyLabel = property.currency === "USD" ? "$" : "ج.س";
+  const periodLabel = property.rental_period === "يومي" ? "يومياً" : property.rental_period === "أسبوعي" ? "أسبوعياً" : "شهرياً";
 
   return (
     <div className="min-h-screen bg-background">
@@ -70,7 +78,10 @@ export default function PropertyDetails() {
             <h1 className="text-2xl font-bold">{property.title}</h1>
             <Badge>{property.property_type}</Badge>
           </div>
-          <p className="text-3xl font-bold text-primary">{property.price.toLocaleString()} ج.س</p>
+          <p className="text-3xl font-bold text-primary">
+            {property.price.toLocaleString()} {currencyLabel}
+            <span className="text-base font-medium text-muted-foreground"> / {periodLabel}</span>
+          </p>
           <div className="flex items-center gap-2 text-muted-foreground">
             <MapPin className="h-4 w-4" /><span>{property.location}</span>
           </div>
@@ -80,7 +91,7 @@ export default function PropertyDetails() {
             <a href={`tel:${cleanPhone}`} className="flex-1">
               <Button variant="outline" className="w-full"><Phone className="h-4 w-4 ml-2" />اتصال بالمعلن</Button>
             </a>
-            <a href={`https://wa.me/${waPhone}?text=${encodeURIComponent(`مرحباً، أستفسر عن العقار: ${property.title}\nالسعر: ${property.price.toLocaleString()} ج.س\nالموقع: ${property.location}${images.length > 0 ? `\nالصورة: ${images[0].image_url}` : ""}\n\nرابط العقار: ${window.location.href}`)}`} target="_blank" rel="noopener noreferrer" className="flex-1">
+            <a href={`https://wa.me/${waPhone}?text=${encodeURIComponent(`مرحباً، أستفسر عن العقار: ${property.title}\nالسعر: ${property.price.toLocaleString()} ${currencyLabel} / ${periodLabel}\nالموقع: ${property.location}${images.length > 0 ? `\nالصورة: ${images[0].image_url}` : ""}\n\nرابط العقار: ${window.location.href}`)}`} target="_blank" rel="noopener noreferrer" className="flex-1">
               <Button variant="default" className="w-full"><MessageCircle className="h-4 w-4 ml-2" />واتساب المعلن</Button>
             </a>
           </div>

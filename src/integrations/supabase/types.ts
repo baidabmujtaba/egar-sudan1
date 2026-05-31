@@ -51,6 +51,7 @@ export type Database = {
           phone_number: string
           price: number
           property_type: string
+          rental_period: string
           status: string
           title: string
           user_id: string
@@ -65,6 +66,7 @@ export type Database = {
           phone_number: string
           price: number
           property_type: string
+          rental_period?: string
           status?: string
           title: string
           user_id: string
@@ -79,6 +81,7 @@ export type Database = {
           phone_number?: string
           price?: number
           property_type?: string
+          rental_period?: string
           status?: string
           title?: string
           user_id?: string
