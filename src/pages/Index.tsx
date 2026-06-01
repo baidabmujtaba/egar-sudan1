@@ -17,37 +17,51 @@ export default function Index() {
   const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
+    const SUPABASE_URL = "https://dtqxhwmkfygtaiijjyle.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0cXhod21rZnlndGFpaWpqeWxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzODMyMzMsImV4cCI6MjA5MDk1OTIzM30.OQ_1oZDRwSud9avHLsEOb4XlQMsTzNTkie7Am-u1Bow";
+
     const fetchProperties = async () => {
-      for (let attempt = 1; attempt <= 3; attempt++) {
-        try {
-          const { data, error } = await supabase
-            .from("properties")
-            .select("*, property_images(image_url)")
-            .eq("status", "approved")
-            .order("created_at", { ascending: false })
-            .limit(6);
-          if (error) {
-            console.error(`Properties fetch error (attempt ${attempt}):`, error);
-            if (attempt < 3) {
-              await new Promise(r => setTimeout(r, 1000 * attempt));
-              continue;
-            }
-            setFetchError(error.message);
-            break;
-          }
-          setProperties(data || []);
+      try {
+        // Try Supabase client first
+        const { data, error } = await supabase
+          .from("properties")
+          .select("*, property_images(image_url)")
+          .eq("status", "approved")
+          .order("created_at", { ascending: false })
+          .limit(6);
+        if (!error && data) {
+          setProperties(data);
           setFetchError(null);
-          break;
-        } catch (err: any) {
-          console.error(`Properties fetch exception (attempt ${attempt}):`, err);
-          if (attempt < 3) {
-            await new Promise(r => setTimeout(r, 1000 * attempt));
-            continue;
-          }
-          setFetchError(err?.message || "خطأ غير معروف");
+          setLoading(false);
+          return;
         }
+        console.error("Supabase client failed, trying direct fetch:", error);
+      } catch (err) {
+        console.error("Supabase client exception, trying direct fetch:", err);
       }
-      setLoading(false);
+
+      // Fallback: direct fetch with explicit headers
+      try {
+        const url = `${SUPABASE_URL}/rest/v1/properties?select=*,property_images(image_url)&status=eq.approved&order=created_at.desc&limit=6`;
+        const res = await fetch(url, {
+          headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${SUPABASE_KEY}`,
+            "Content-Type": "application/json",
+          },
+        });
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+        }
+        const data = await res.json();
+        setProperties(data || []);
+        setFetchError(null);
+      } catch (err: any) {
+        console.error("Direct fetch also failed:", err);
+        setFetchError(err?.message || "خطأ غير معروف");
+      } finally {
+        setLoading(false);
+      }
     };
     fetchProperties();
   }, []);
