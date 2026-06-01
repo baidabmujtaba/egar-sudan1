@@ -29,17 +29,25 @@ export default function Properties() {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   const loadPage = useCallback(async (pageIndex: number) => {
-    const from = pageIndex * PAGE_SIZE;
-    const to = from + PAGE_SIZE - 1;
-    const { data, error } = await supabase
-      .from("properties")
-      .select("*, property_images(image_url)")
-      .eq("status", "approved")
-      .order("created_at", { ascending: false })
-      .range(from, to);
-    if (error) return { rows: [] as any[], end: true };
-    const rows = data || [];
-    return { rows, end: rows.length < PAGE_SIZE };
+    try {
+      const from = pageIndex * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+      const { data, error } = await supabase
+        .from("properties")
+        .select("*, property_images(image_url)")
+        .eq("status", "approved")
+        .order("created_at", { ascending: false })
+        .range(from, to);
+      if (error) {
+        console.error("Properties fetch error:", error);
+        return { rows: [] as any[], end: true };
+      }
+      const rows = data || [];
+      return { rows, end: rows.length < PAGE_SIZE };
+    } catch (err) {
+      console.error("Properties fetch exception:", err);
+      return { rows: [] as any[], end: true };
+    }
   }, []);
 
   useEffect(() => {

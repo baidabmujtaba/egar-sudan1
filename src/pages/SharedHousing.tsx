@@ -13,16 +13,22 @@ export default function SharedHousing() {
   const [genderFilter, setGenderFilter] = useState("all");
 
   useEffect(() => {
-    const fetch = async () => {
-      const { data } = await supabase
-        .from("shared_housing")
-        .select("*")
-        .eq("status", "approved")
-        .order("created_at", { ascending: false });
-      setItems(data || []);
-      setLoading(false);
+    const fetchData = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("shared_housing")
+          .select("*")
+          .eq("status", "approved")
+          .order("created_at", { ascending: false });
+        if (error) console.error("Shared housing fetch error:", error);
+        setItems(data || []);
+      } catch (err) {
+        console.error("Shared housing fetch exception:", err);
+      } finally {
+        setLoading(false);
+      }
     };
-    fetch();
+    fetchData();
   }, []);
 
   const filtered = items.filter(i => {

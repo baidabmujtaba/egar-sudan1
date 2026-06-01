@@ -17,14 +17,20 @@ export default function Index() {
 
   useEffect(() => {
     const fetchProperties = async () => {
-      const { data } = await supabase
-        .from("properties")
-        .select("*, property_images(image_url)")
-        .eq("status", "approved")
-        .order("created_at", { ascending: false })
-        .limit(6);
-      setProperties(data || []);
-      setLoading(false);
+      try {
+        const { data, error } = await supabase
+          .from("properties")
+          .select("*, property_images(image_url)")
+          .eq("status", "approved")
+          .order("created_at", { ascending: false })
+          .limit(6);
+        if (error) console.error("Properties fetch error:", error);
+        setProperties(data || []);
+      } catch (err) {
+        console.error("Properties fetch exception:", err);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchProperties();
   }, []);
