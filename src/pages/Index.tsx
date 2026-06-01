@@ -14,6 +14,7 @@ export default function Index() {
   const [properties, setProperties] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -24,10 +25,14 @@ export default function Index() {
           .eq("status", "approved")
           .order("created_at", { ascending: false })
           .limit(6);
-        if (error) console.error("Properties fetch error:", error);
+        if (error) {
+          console.error("Properties fetch error:", error);
+          setFetchError(error.message);
+        }
         setProperties(data || []);
-      } catch (err) {
+      } catch (err: any) {
         console.error("Properties fetch exception:", err);
+        setFetchError(err?.message || "خطأ غير معروف");
       } finally {
         setLoading(false);
       }
@@ -166,6 +171,12 @@ export default function Index() {
         </div>
         {loading ? (
           <div className="text-center py-10 text-muted-foreground">جاري التحميل...</div>
+        ) : fetchError ? (
+          <div className="text-center py-10 text-destructive">
+            <p>حدث خطأ في تحميل العقارات</p>
+            <p className="text-sm mt-1">{fetchError}</p>
+            <Button variant="outline" className="mt-3" onClick={() => window.location.reload()}>إعادة المحاولة</Button>
+          </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-10 text-muted-foreground">لا توجد عقارات حالياً</div>
         ) : (
