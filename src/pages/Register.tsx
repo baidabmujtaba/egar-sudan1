@@ -20,17 +20,31 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const cleanPhone = phoneNumber.replace(/\s+/g, "");
+    if (!/^[0-9]{7,15}$/.test(cleanPhone)) {
+      toast.error("رقم الهاتف غير صالح. أدخل أرقاماً فقط (7-15 رقم)");
+      return;
+    }
+    if (!fullName.trim()) {
+      toast.error("الاسم الكامل مطلوب");
+      return;
+    }
     if (password.length < 6) {
       toast.error("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
       return;
     }
     setLoading(true);
     try {
-      await signUp(phoneNumber, password, fullName, phoneNumber, role);
+      await signUp(cleanPhone, password, fullName.trim(), cleanPhone, role);
       toast.success("تم إنشاء الحساب بنجاح");
       navigate("/");
-    } catch {
-      toast.error("حدث خطأ في التسجيل. تأكد أن رقم الهاتف غير مستخدم.");
+    } catch (err: any) {
+      const msg = err?.message || "";
+      if (msg.toLowerCase().includes("already") || msg.toLowerCase().includes("registered")) {
+        toast.error("رقم الهاتف مستخدم بالفعل");
+      } else {
+        toast.error(msg || "حدث خطأ في التسجيل");
+      }
     } finally {
       setLoading(false);
     }
