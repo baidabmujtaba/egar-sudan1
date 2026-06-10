@@ -2,6 +2,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Phone, MessageCircle, Bed, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface SharedHousingCardProps {
   title: string;
@@ -9,7 +11,7 @@ interface SharedHousingCardProps {
   location: string;
   gender: string;
   available_spots: number;
-  phone_number: string;
+  phone_number?: string | null;
   video_url?: string | null;
 }
 
@@ -21,8 +23,18 @@ const genderColor: Record<string, string> = {
 };
 
 export default function SharedHousingCard({ title, price, location, gender, available_spots, phone_number, video_url }: SharedHousingCardProps) {
-  const cleanPhone = phone_number.replace(/\s+/g, "");
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const cleanPhone = (phone_number || "").replace(/\s+/g, "");
   const waPhone = cleanPhone.startsWith("0") ? "249" + cleanPhone.slice(1) : cleanPhone;
+  const requireLogin = (e: React.MouseEvent) => {
+    if (!user || !phone_number) {
+      e.preventDefault();
+      navigate("/login");
+      return true;
+    }
+    return false;
+  };
 
   return (
     <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 animate-fade-in group border-0 shadow-md">
@@ -66,12 +78,12 @@ export default function SharedHousingCard({ title, price, location, gender, avai
 
         {/* Action buttons */}
         <div className="flex gap-2 pt-1">
-          <a href={`tel:${cleanPhone}`} className="flex-1">
+          <a href={user && phone_number ? `tel:${cleanPhone}` : "#"} className="flex-1" onClick={requireLogin}>
             <Button variant="outline" size="sm" className="w-full h-10 rounded-lg text-xs font-semibold">
               <Phone className="h-4 w-4 ml-1" />اتصال
             </Button>
           </a>
-          <a href={`https://wa.me/${waPhone}?text=${encodeURIComponent(`مرحباً، أستفسر عن السكن المشترك: ${title}\nالسعر: ${price.toLocaleString()} ج.س\nالموقع: ${location}`)}`} target="_blank" rel="noopener noreferrer" className="flex-1">
+          <a href={user && phone_number ? `https://wa.me/${waPhone}?text=${encodeURIComponent(`مرحباً، أستفسر عن السكن المشترك: ${title}\nالسعر: ${price.toLocaleString()} ج.س\nالموقع: ${location}`)}` : "#"} target="_blank" rel="noopener noreferrer" className="flex-1" onClick={requireLogin}>
             <Button variant="default" size="sm" className="w-full h-10 rounded-lg text-xs font-semibold">
               <MessageCircle className="h-4 w-4 ml-1" />واتساب
             </Button>
