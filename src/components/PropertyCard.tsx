@@ -4,6 +4,8 @@ import { MapPin, Phone, MessageCircle, Video, ChevronLeft, ChevronRight } from "
 import { Button } from "@/components/ui/button";
 import { useRef, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface PropertyCardProps {
   id: string;
@@ -11,7 +13,7 @@ interface PropertyCardProps {
   price: number;
   location: string;
   property_type: string;
-  phone_number: string;
+  phone_number?: string | null;
   currency?: string;
   rental_period?: string;
   video_url?: string | null;
@@ -19,11 +21,22 @@ interface PropertyCardProps {
 }
 
 export default function PropertyCard({ id, title, price, location, property_type, phone_number, currency, rental_period, video_url, images }: PropertyCardProps) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const firstImage = images?.[0]?.image_url;
   const currencyLabel = currency === "USD" ? "$" : "ج.س";
   const periodLabel = rental_period === "يومي" ? "/ يومياً" : rental_period === "أسبوعي" ? "/ أسبوعياً" : "/ شهرياً";
-  const cleanPhone = phone_number.replace(/\s+/g, "");
+  const cleanPhone = (phone_number || "").replace(/\s+/g, "");
   const waPhone = cleanPhone.startsWith("0") ? "249" + cleanPhone.slice(1) : cleanPhone;
+  const requireLogin = (e: React.MouseEvent) => {
+    if (!user || !phone_number) {
+      e.preventDefault();
+      e.stopPropagation();
+      navigate("/login");
+      return true;
+    }
+    return false;
+  };
   const videoRef = useRef<HTMLVideoElement>(null);
   const [open, setOpen] = useState(false);
   const [slide, setSlide] = useState(0);
@@ -94,10 +107,10 @@ export default function PropertyCard({ id, title, price, location, property_type
         </Link>
       </div>
       <div className="pt-3 flex gap-2">
-        <a href={`tel:${cleanPhone}`} className="flex-1" onClick={e => e.stopPropagation()}>
+        <a href={user && phone_number ? `tel:${cleanPhone}` : "#"} className="flex-1" onClick={e => { if (requireLogin(e)) return; e.stopPropagation(); }}>
           <Button variant="outline" size="sm" className="w-full rounded-full"><Phone className="h-4 w-4 ml-1" />اتصال</Button>
         </a>
-        <a href={`https://wa.me/${waPhone}?text=${encodeURIComponent(waMessage)}`} target="_blank" rel="noopener noreferrer" className="flex-1" onClick={e => e.stopPropagation()}>
+        <a href={user && phone_number ? `https://wa.me/${waPhone}?text=${encodeURIComponent(waMessage)}` : "#"} target="_blank" rel="noopener noreferrer" className="flex-1" onClick={e => { if (requireLogin(e)) return; e.stopPropagation(); }}>
           <Button variant="default" size="sm" className="w-full rounded-full bg-[#25D366] hover:bg-[#1ebe5d] text-white"><MessageCircle className="h-4 w-4 ml-1" />واتساب</Button>
         </a>
       </div>
