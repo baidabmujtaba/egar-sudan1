@@ -147,6 +147,8 @@ export default function EditProperty() {
                     <SelectItem value="عمارة">عمارة</SelectItem>
                     <SelectItem value="شاغر">شاغر</SelectItem>
                     <SelectItem value="منزل أرضي">منزل أرضي</SelectItem>
+                    <SelectItem value="فيلا">فيلا</SelectItem>
+                    <SelectItem value="استوديو">استوديو</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
