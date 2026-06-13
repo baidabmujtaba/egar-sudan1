@@ -160,18 +160,31 @@ export default function AddProperty() {
                 <label className="block text-sm font-medium mb-1">الوصف</label>
                 <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} />
               </div>
-              <ImageUpload files={images} onChange={setImages} />
+              <ImageUpload files={images} onChange={setImages} maxFiles={10} />
+              <p className="text-xs text-muted-foreground -mt-2">
+                الحد الأدنى: 5 صور أو فيديو واحد على الأقل
+              </p>
               <div className="space-y-2">
                 <label className="block text-sm font-medium">فيديو للعقار (اختياري - حتى 50 ميجا)</label>
                 {video ? (
-                  <div className="flex items-center justify-between rounded-lg border p-3 bg-muted/40">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <Video className="h-4 w-4 text-primary shrink-0" />
-                      <span className="text-sm truncate">{video.name}</span>
+                  <div className="rounded-lg border p-3 bg-muted/40 space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Video className="h-4 w-4 text-primary shrink-0" />
+                        <span className="text-sm truncate">{video.name}</span>
+                      </div>
+                      <button type="button" onClick={() => setVideo(null)} className="p-1 rounded hover:bg-destructive/10">
+                        <X className="h-4 w-4 text-destructive" />
+                      </button>
                     </div>
-                    <button type="button" onClick={() => setVideo(null)} className="p-1 rounded hover:bg-destructive/10">
-                      <X className="h-4 w-4 text-destructive" />
-                    </button>
+                    {videoPreview && (
+                      <video
+                        src={videoPreview}
+                        controls
+                        playsInline
+                        className="w-full rounded-md aspect-video bg-black"
+                      />
+                    )}
                   </div>
                 ) : (
                   <label className="flex items-center justify-center gap-2 rounded-lg border-2 border-dashed p-4 cursor-pointer hover:border-primary transition-colors text-sm text-muted-foreground">
