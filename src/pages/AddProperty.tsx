@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -18,9 +18,17 @@ export default function AddProperty() {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<File[]>([]);
   const [video, setVideo] = useState<File | null>(null);
+  const videoPreview = useMemo(() => (video ? URL.createObjectURL(video) : null), [video]);
+  useEffect(() => {
+    return () => { if (videoPreview) URL.revokeObjectURL(videoPreview); };
+  }, [videoPreview]);
   const [form, setForm] = useState({
     title: "", price: "", location: "", description: "", phone_number: "", property_type: "شقة", currency: "SDG", rental_period: "شهري",
   });
+
+  if (!user) {
+    return <Navigate to="/register" replace state={{ from: "/add-property" }} />;
+  }
 
   const uploadImage = async (file: File): Promise<string> => {
     if (!user) throw new Error("Not authenticated");
@@ -34,6 +42,9 @@ export default function AddProperty() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return toast.error("يجب تسجيل الدخول أولاً");
+    if (images.length < 5 && !video) {
+      return toast.error("يجب رفع 5 صور على الأقل أو فيديو واحد للعقار");
+    }
     setLoading(true);
     try {
       let videoUrl: string | null = null;
