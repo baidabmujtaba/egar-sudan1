@@ -68,26 +68,25 @@ export default function PropertyCard({ id, title, price, location, property_type
     <div className="group animate-fade-in">
       <div
         className="block cursor-pointer"
-        onMouseEnter={() => videoRef.current?.play().catch(() => {})}
-        onMouseLeave={() => { if (videoRef.current) { videoRef.current.pause(); videoRef.current.currentTime = 0; } }}
         onClick={openLightbox}
       >
         <div className="aspect-square sm:aspect-[4/5] bg-muted relative overflow-hidden rounded-2xl">
-          {firstImage ? (
-            <img src={firstImage} alt={title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-          ) : (
-            <div className="flex items-center justify-center h-full text-muted-foreground">لا توجد صورة</div>
-          )}
-          {video_url && (
+          {video_url ? (
             <video
               ref={videoRef}
               src={video_url}
+              autoPlay
               muted
               loop
               playsInline
-              preload="metadata"
-              className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              preload="auto"
+              poster={firstImage}
+              className="w-full h-full object-cover"
             />
+          ) : firstImage ? (
+            <img src={firstImage} alt={title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+          ) : (
+            <div className="flex items-center justify-center h-full text-muted-foreground">لا توجد صورة</div>
           )}
           <Badge className="absolute top-3 right-3 bg-background/95 text-foreground hover:bg-background border-0 shadow">{property_type}</Badge>
           {video_url && (

@@ -5,7 +5,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import PropertyCard from "@/components/PropertyCard";
 import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
 import {
   Search, Home, Users, Building, Building2, MapPin, Phone, Mail,
   MessageCircle, Facebook, Instagram, Menu, User, LogOut, Plus, Shield,
@@ -40,11 +39,6 @@ export default function Index() {
   const [category, setCategory] = useState(() => searchParams.get("cat") || "all");
   const [search, setSearch] = useState(() => searchParams.get("q") || "");
   const [location, setLocation] = useState(() => searchParams.get("loc") || "");
-  const [priceRange, setPriceRange] = useState<[number, number]>(() => {
-    const min = Number(searchParams.get("min")) || 0;
-    const max = Number(searchParams.get("max")) || 100000;
-    return [min, max];
-  });
   const [selectedTypes, setSelectedTypes] = useState<string[]>(() => {
     const t = searchParams.get("types");
     return t ? t.split(",").filter(Boolean) : [];
@@ -57,11 +51,9 @@ export default function Index() {
     if (category && category !== "all") params.set("cat", category);
     if (search) params.set("q", search);
     if (location) params.set("loc", location);
-    if (priceRange[0] > 0) params.set("min", String(priceRange[0]));
-    if (priceRange[1] < 100000) params.set("max", String(priceRange[1]));
     if (selectedTypes.length) params.set("types", selectedTypes.join(","));
     setSearchParams(params, { replace: true });
-  }, [category, search, location, priceRange, selectedTypes, setSearchParams]);
+  }, [category, search, location, selectedTypes, setSearchParams]);
 
   const loadPage = useCallback(async (pageIndex: number) => {
     const from = pageIndex * PAGE_SIZE;
@@ -125,18 +117,15 @@ export default function Index() {
     const matchCat = category === "all" || p.property_type === category;
     const matchSearch = !search || p.title?.includes(search) || p.location?.includes(search);
     const matchLocation = !location || p.location?.toLowerCase().includes(location.toLowerCase());
-    const price = Number(p.price) || 0;
-    const noMaxLimit = priceRange[1] >= 100000;
-    const matchPrice = price >= priceRange[0] && (noMaxLimit || price <= priceRange[1]);
     const matchTypes = selectedTypes.length === 0 || selectedTypes.includes(p.property_type);
-    return matchCat && matchSearch && matchLocation && matchPrice && matchTypes;
+    return matchCat && matchSearch && matchLocation && matchTypes;
   });
 
   const toggleType = (t: string) =>
     setSelectedTypes(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]);
   const TYPE_CHIPS = ["شقة", "منزل أرضي", "عمارة", "فيلا", "استوديو"];
   const resetFilters = () => {
-    setLocation(""); setPriceRange([0, 100000]); setSelectedTypes([]); setSearch(""); setCategory("all");
+    setLocation(""); setSelectedTypes([]); setSearch(""); setCategory("all");
   };
 
   const handleSignOut = async () => {
@@ -295,21 +284,6 @@ export default function Index() {
               />
             </div>
 
-            {/* Price range */}
-            <div className="flex-1 min-w-0 lg:max-w-sm">
-              <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
-                <span>السعر</span>
-                <span className="font-medium text-foreground">
-                  {priceRange[0].toLocaleString()} - {priceRange[1].toLocaleString()}
-                </span>
-              </div>
-              <Slider
-                min={0} max={100000} step={500}
-                value={priceRange}
-                onValueChange={(v) => setPriceRange([v[0], v[1]] as [number, number])}
-              />
-            </div>
-
             {/* Type chips */}
             <div className="flex gap-2 overflow-x-auto scrollbar-none lg:flex-shrink-0">
               {TYPE_CHIPS.map(t => {
@@ -330,7 +304,7 @@ export default function Index() {
               })}
             </div>
 
-            {(location || selectedTypes.length > 0 || priceRange[0] > 0 || priceRange[1] < 100000) && (
+            {(location || selectedTypes.length > 0) && (
               <Button variant="ghost" size="sm" onClick={resetFilters} className="lg:flex-shrink-0">
                 مسح
               </Button>
