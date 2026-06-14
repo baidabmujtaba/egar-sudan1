@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -31,17 +31,37 @@ const CATEGORIES = [
 export default function Index() {
   const { user, profile, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [properties, setProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
-  const [category, setCategory] = useState("all");
-  const [search, setSearch] = useState("");
-  const [location, setLocation] = useState("");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [category, setCategory] = useState(() => searchParams.get("cat") || "all");
+  const [search, setSearch] = useState(() => searchParams.get("q") || "");
+  const [location, setLocation] = useState(() => searchParams.get("loc") || "");
+  const [priceRange, setPriceRange] = useState<[number, number]>(() => {
+    const min = Number(searchParams.get("min")) || 0;
+    const max = Number(searchParams.get("max")) || 100000;
+    return [min, max];
+  });
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(() => {
+    const t = searchParams.get("types");
+    return t ? t.split(",").filter(Boolean) : [];
+  });
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  // Persist filter state to the URL (shareable links)
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (category && category !== "all") params.set("cat", category);
+    if (search) params.set("q", search);
+    if (location) params.set("loc", location);
+    if (priceRange[0] > 0) params.set("min", String(priceRange[0]));
+    if (priceRange[1] < 100000) params.set("max", String(priceRange[1]));
+    if (selectedTypes.length) params.set("types", selectedTypes.join(","));
+    setSearchParams(params, { replace: true });
+  }, [category, search, location, priceRange, selectedTypes, setSearchParams]);
 
   const loadPage = useCallback(async (pageIndex: number) => {
     const from = pageIndex * PAGE_SIZE;
@@ -106,7 +126,8 @@ export default function Index() {
     const matchSearch = !search || p.title?.includes(search) || p.location?.includes(search);
     const matchLocation = !location || p.location?.toLowerCase().includes(location.toLowerCase());
     const price = Number(p.price) || 0;
-    const matchPrice = price >= priceRange[0] && price <= priceRange[1];
+    const noMaxLimit = priceRange[1] >= 100000;
+    const matchPrice = price >= priceRange[0] && (noMaxLimit || price <= priceRange[1]);
     const matchTypes = selectedTypes.length === 0 || selectedTypes.includes(p.property_type);
     return matchCat && matchSearch && matchLocation && matchPrice && matchTypes;
   });
