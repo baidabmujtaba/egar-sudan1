@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import PropertyCard from "@/components/PropertyCard";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
 import {
   Search, Home, Users, Building, Building2, MapPin, Phone, Mail,
   MessageCircle, Facebook, Instagram, Menu, User, LogOut, Plus, Shield,
@@ -36,6 +38,9 @@ export default function Index() {
   const [page, setPage] = useState(0);
   const [category, setCategory] = useState("all");
   const [search, setSearch] = useState("");
+  const [location, setLocation] = useState("");
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   const loadPage = useCallback(async (pageIndex: number) => {
@@ -99,8 +104,19 @@ export default function Index() {
   const filtered = properties.filter(p => {
     const matchCat = category === "all" || p.property_type === category;
     const matchSearch = !search || p.title?.includes(search) || p.location?.includes(search);
-    return matchCat && matchSearch;
+    const matchLocation = !location || p.location?.toLowerCase().includes(location.toLowerCase());
+    const price = Number(p.price) || 0;
+    const matchPrice = price >= priceRange[0] && price <= priceRange[1];
+    const matchTypes = selectedTypes.length === 0 || selectedTypes.includes(p.property_type);
+    return matchCat && matchSearch && matchLocation && matchPrice && matchTypes;
   });
+
+  const toggleType = (t: string) =>
+    setSelectedTypes(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]);
+  const TYPE_CHIPS = ["شقة", "منزل أرضي", "عمارة", "فيلا", "استوديو"];
+  const resetFilters = () => {
+    setLocation(""); setPriceRange([0, 100000]); setSelectedTypes([]); setSearch(""); setCategory("all");
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -240,6 +256,65 @@ export default function Index() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full h-12 pr-11 pl-4 border rounded-full bg-background focus:outline-none focus:ring-2 focus:ring-primary/30"
           />
+        </div>
+      </div>
+
+      {/* Sticky horizontal filter bar */}
+      <div className="sticky top-[140px] z-40 bg-background/95 backdrop-blur border-y mt-4">
+        <div className="container py-3">
+          <div className="flex flex-col lg:flex-row lg:items-center gap-3">
+            {/* Location */}
+            <div className="relative flex-1 min-w-0">
+              <MapPin className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="المدينة أو الحي"
+                className="h-10 pr-9"
+              />
+            </div>
+
+            {/* Price range */}
+            <div className="flex-1 min-w-0 lg:max-w-sm">
+              <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
+                <span>السعر</span>
+                <span className="font-medium text-foreground">
+                  {priceRange[0].toLocaleString()} - {priceRange[1].toLocaleString()}
+                </span>
+              </div>
+              <Slider
+                min={0} max={100000} step={500}
+                value={priceRange}
+                onValueChange={(v) => setPriceRange([v[0], v[1]] as [number, number])}
+              />
+            </div>
+
+            {/* Type chips */}
+            <div className="flex gap-2 overflow-x-auto scrollbar-none lg:flex-shrink-0">
+              {TYPE_CHIPS.map(t => {
+                const active = selectedTypes.includes(t);
+                return (
+                  <button
+                    key={t}
+                    onClick={() => toggleType(t)}
+                    className={`px-3 h-9 rounded-full border text-xs font-medium whitespace-nowrap transition-colors ${
+                      active
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background hover:border-foreground"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                );
+              })}
+            </div>
+
+            {(location || selectedTypes.length > 0 || priceRange[0] > 0 || priceRange[1] < 100000) && (
+              <Button variant="ghost" size="sm" onClick={resetFilters} className="lg:flex-shrink-0">
+                مسح
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
