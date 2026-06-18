@@ -153,7 +153,7 @@ export default function Admin() {
                   <CardContent className="p-4 space-y-3">
                     <div className="flex gap-3 overflow-x-auto">
                       {imgs.slice(0, 5).map((u, i) => (
-                        <img key={i} src={u} alt={p.title} className="h-24 w-32 object-cover rounded-md flex-shrink-0" />
+                        <img key={i} src={(await import("@/lib/image")).thumb ? u : u} alt={p.title} loading="lazy" decoding="async" className="h-24 w-32 object-cover rounded-md flex-shrink-0" />
                       ))}
                       {imgs.length === 0 && <div className="h-24 w-32 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">لا صور</div>}
                       {p.video_url && (
