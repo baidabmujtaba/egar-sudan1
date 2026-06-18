@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Check, Trash2, Eye, Pencil, Users, Home, Building2, UserCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import { thumb } from "@/lib/image";
 
 export default function Admin() {
   const { isAdmin, loading: authLoading } = useAuth();
@@ -153,7 +154,7 @@ export default function Admin() {
                   <CardContent className="p-4 space-y-3">
                     <div className="flex gap-3 overflow-x-auto">
                       {imgs.slice(0, 5).map((u, i) => (
-                        <img key={i} src={(await import("@/lib/image")).thumb ? u : u} alt={p.title} loading="lazy" decoding="async" className="h-24 w-32 object-cover rounded-md flex-shrink-0" />
+                        <img key={i} src={thumb(u, { width: 256, quality: 65 })} alt={p.title} loading="lazy" decoding="async" className="h-24 w-32 object-cover rounded-md flex-shrink-0" />
                       ))}
                       {imgs.length === 0 && <div className="h-24 w-32 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">لا صور</div>}
                       {p.video_url && (
@@ -255,7 +256,7 @@ export default function Admin() {
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-2">
                     {(previewProp._images || []).map((u: string, i: number) => (
-                      <img key={i} src={u} alt="" className="w-full h-40 object-cover rounded-md" />
+                      <img key={i} src={thumb(u, { width: 480, quality: 70 })} alt="" loading="lazy" decoding="async" className="w-full h-40 object-cover rounded-md" />
                     ))}
                   </div>
                   {previewProp.video_url && (
