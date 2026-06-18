@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, Phone, MessageCircle, Headphones } from "lucide-react";
+import { thumb, thumbSrcSet } from "@/lib/image";
 
 const SUPPORT_PHONE = "249116458724";
 
@@ -49,14 +50,21 @@ export default function PropertyDetails() {
         {images.length > 0 && (
           <div className="space-y-2">
             <div className="aspect-video rounded-lg overflow-hidden bg-muted">
-              <img src={images[activeImage]?.image_url} alt={property.title} className="w-full h-full object-cover" />
+              <img
+                src={thumb(images[activeImage]?.image_url, { width: 1280, quality: 80 })}
+                srcSet={thumbSrcSet(images[activeImage]?.image_url, [640, 960, 1280, 1600]) || undefined}
+                sizes="(max-width: 768px) 100vw, 800px"
+                alt={property.title}
+                className="w-full h-full object-cover"
+                decoding="async"
+              />
             </div>
             {images.length > 1 && (
               <div className="flex gap-2 overflow-x-auto pb-2">
                 {images.map((img: any, i: number) => (
                   <button key={i} onClick={() => setActiveImage(i)}
                     className={`w-16 h-16 rounded-md overflow-hidden border-2 flex-shrink-0 ${i === activeImage ? "border-primary" : "border-transparent"}`}>
-                    <img src={img.image_url} alt="" className="w-full h-full object-cover" />
+                    <img src={thumb(img.image_url, { width: 128, quality: 60 })} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>

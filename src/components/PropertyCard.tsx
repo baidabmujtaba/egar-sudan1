@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { thumb, thumbSrcSet } from "@/lib/image";
 
 interface PropertyCardProps {
   id: string;
@@ -24,6 +25,9 @@ export default function PropertyCard({ id, title, price, location, property_type
   const { user } = useAuth();
   const navigate = useNavigate();
   const firstImage = images?.[0]?.image_url;
+  const firstImageThumb = thumb(firstImage, { width: 640, quality: 65 });
+  const firstImageSrcSet = thumbSrcSet(firstImage);
+  const posterThumb = thumb(firstImage, { width: 640, quality: 60 });
   const currencyLabel = currency === "USD" ? "$" : "ج.س";
   const periodLabel = rental_period === "يومي" ? "/ يومياً" : rental_period === "أسبوعي" ? "/ أسبوعياً" : "/ شهرياً";
   const cleanPhone = (phone_number || "").replace(/\s+/g, "");
@@ -80,11 +84,21 @@ export default function PropertyCard({ id, title, price, location, property_type
               loop
               playsInline
               preload="auto"
-              poster={firstImage}
+              poster={posterThumb || undefined}
               className="w-full h-full object-cover"
             />
           ) : firstImage ? (
-            <img src={firstImage} alt={title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+            <img
+              src={firstImageThumb}
+              srcSet={firstImageSrcSet || undefined}
+              sizes="(max-width: 640px) 50vw, 320px"
+              alt={title}
+              width={640}
+              height={640}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+              decoding="async"
+            />
           ) : (
             <div className="flex items-center justify-center h-full text-muted-foreground">لا توجد صورة</div>
           )}
@@ -120,7 +134,7 @@ export default function PropertyCard({ id, title, price, location, property_type
             {mediaList[slide]?.type === "video" ? (
               <video src={mediaList[slide].url} controls autoPlay playsInline className="w-full h-full object-contain" />
             ) : (
-              <img src={mediaList[slide]?.url} alt={title} className="w-full h-full object-contain" />
+              <img src={thumb(mediaList[slide]?.url, { width: 1600, quality: 85, resize: "contain" }) || mediaList[slide]?.url} alt={title} className="w-full h-full object-contain" />
             )}
             {total > 1 && (
               <>
@@ -146,7 +160,7 @@ export default function PropertyCard({ id, title, price, location, property_type
                       <Video className="absolute inset-0 m-auto h-5 w-5 text-white" />
                     </>
                   ) : (
-                    <img src={m.url} alt="" className="w-full h-full object-cover" />
+                    <img src={thumb(m.url, { width: 160, quality: 60 })} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                   )}
                 </button>
               ))}
