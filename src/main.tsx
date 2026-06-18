@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import { registerServiceWorker } from "./pwa/registerSW";
 
 // Auto-reload when a stale dynamic chunk fails to load after a new deploy
 window.addEventListener("vite:preloadError", () => {
@@ -14,3 +15,5 @@ window.addEventListener("error", (e) => {
 });
 
 createRoot(document.getElementById("root")!).render(<App />);
+
+registerServiceWorker();
