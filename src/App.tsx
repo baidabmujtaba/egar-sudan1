@@ -15,6 +15,8 @@ const PropertyDetails = lazy(() => import("./pages/PropertyDetails"));
 const SharedHousing = lazy(() => import("./pages/SharedHousing"));
 const AddProperty = lazy(() => import("./pages/AddProperty"));
 const AddShared = lazy(() => import("./pages/AddShared"));
+const Dormitories = lazy(() => import("./pages/Dormitories"));
+const AddDormitory = lazy(() => import("./pages/AddDormitory"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Admin = lazy(() => import("./pages/Admin"));
 const EditProperty = lazy(() => import("./pages/EditProperty"));
@@ -49,6 +51,8 @@ const App = () => (
               <Route path="/shared-housing" element={<SharedHousing />} />
               <Route path="/add-property" element={<AddProperty />} />
               <Route path="/add-shared" element={<AddShared />} />
+              <Route path="/dormitories" element={<Dormitories />} />
+              <Route path="/add-dormitory" element={<AddDormitory />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/edit-property/:id" element={<EditProperty />} />

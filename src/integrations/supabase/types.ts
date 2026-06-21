@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      dormitories: {
+        Row: {
+          available_spots: number
+          beds_per_room: number
+          created_at: string
+          description: string | null
+          gender: string
+          id: string
+          location: string
+          meals_included: boolean
+          nearby_university: string | null
+          phone_number: string | null
+          price: number
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+          video_url: string | null
+        }
+        Insert: {
+          available_spots?: number
+          beds_per_room?: number
+          created_at?: string
+          description?: string | null
+          gender?: string
+          id?: string
+          location: string
+          meals_included?: boolean
+          nearby_university?: string | null
+          phone_number?: string | null
+          price: number
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+          video_url?: string | null
+        }
+        Update: {
+          available_spots?: number
+          beds_per_room?: number
+          created_at?: string
+          description?: string | null
+          gender?: string
+          id?: string
+          location?: string
+          meals_included?: boolean
+          nearby_university?: string | null
+          phone_number?: string | null
+          price?: number
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+          video_url?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

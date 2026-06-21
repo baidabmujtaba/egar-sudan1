@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import {
   Search, Home, Users, Building, Building2, MapPin, Phone, Mail,
   MessageCircle, Facebook, Instagram, Menu, User, LogOut, Plus, Shield,
-  Sliders, Globe, BedDouble, Warehouse, Sparkles,
+  Sliders, Globe, BedDouble, Warehouse, Sparkles, GraduationCap,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -25,6 +25,7 @@ const CATEGORIES = [
   { value: "فيلا", label: "فلل", icon: Warehouse },
   { value: "استوديو", label: "استوديو", icon: BedDouble },
   { value: "shared", label: "سكن مشترك", icon: Users },
+  { value: "dormitories", label: "داخليات", icon: GraduationCap },
 ];
 
 export default function Index() {
@@ -108,6 +109,10 @@ export default function Index() {
   const handleCategory = (val: string) => {
     if (val === "shared") {
       navigate("/shared-housing");
+      return;
+    }
+    if (val === "dormitories") {
+      navigate("/dormitories");
       return;
     }
     setCategory(val);
