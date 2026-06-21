@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Home, Plus, User, Shield, LogOut, Menu, X, Users } from "lucide-react";
+import { Home, Plus, User, Shield, LogOut, Menu, X, Users, GraduationCap } from "lucide-react";
 import { useState } from "react";
 
 export default function Navbar() {
@@ -48,6 +48,9 @@ export default function Navbar() {
           <Link to="/shared-housing">
             <Button variant="ghost" size="sm">شواغر</Button>
           </Link>
+          <Link to="/dormitories">
+            <Button variant="ghost" size="sm"><GraduationCap className="h-4 w-4 ml-1" />داخليات</Button>
+          </Link>
           {user ? (
             <>
               <Link to="/add-property">
@@ -84,6 +87,9 @@ export default function Navbar() {
           </Link>
           <Link to="/shared-housing" onClick={() => setOpen(false)}>
             <Button variant="ghost" className="w-full justify-start">شواغر</Button>
+          </Link>
+          <Link to="/dormitories" onClick={() => setOpen(false)}>
+            <Button variant="ghost" className="w-full justify-start"><GraduationCap className="h-4 w-4 ml-2" />داخليات طلابية</Button>
           </Link>
           {user ? (
             <>
