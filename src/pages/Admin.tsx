@@ -18,6 +18,7 @@ export default function Admin() {
   const navigate = useNavigate();
   const [properties, setProperties] = useState<any[]>([]);
   const [shared, setShared] = useState<any[]>([]);
+  const [dorms, setDorms] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [images, setImages] = useState<Record<string, string[]>>({});
   const [previewProp, setPreviewProp] = useState<any | null>(null);
@@ -31,14 +32,16 @@ export default function Admin() {
   }, [isAdmin, authLoading]);
 
   const fetchAll = async () => {
-    const [{ data: p }, { data: s }, { data: u }, { data: imgs }] = await Promise.all([
+    const [{ data: p }, { data: s }, { data: d }, { data: u }, { data: imgs }] = await Promise.all([
       supabase.from("properties").select("*").order("created_at", { ascending: false }),
       supabase.from("shared_housing").select("*").order("created_at", { ascending: false }),
+      supabase.from("dormitories").select("*").order("created_at", { ascending: false }),
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("property_images").select("property_id,image_url"),
     ]);
     setProperties(p || []);
     setShared(s || []);
+    setDorms(d || []);
     setUsers(u || []);
     const map: Record<string, string[]> = {};
     (imgs || []).forEach((r: any) => {
@@ -74,12 +77,25 @@ export default function Admin() {
     fetchAll();
   };
 
+  const approveDorm = async (id: string) => {
+    await supabase.from("dormitories").update({ status: "approved" }).eq("id", id);
+    toast.success("تمت الموافقة");
+    fetchAll();
+  };
+
+  const deleteDorm = async (id: string) => {
+    await supabase.from("dormitories").delete().eq("id", id);
+    toast.success("تم الحذف");
+    fetchAll();
+  };
+
   const statusLabel: Record<string, string> = { pending: "قيد المراجعة", approved: "مقبول" };
 
   if (authLoading || loading) return <div className="min-h-screen bg-background"><Navbar /><div className="text-center py-20 text-muted-foreground">جاري التحميل...</div></div>;
 
   const pendingProps = properties.filter(p => p.status === "pending");
   const pendingShared = shared.filter(s => s.status === "pending");
+  const pendingDorms = dorms.filter(d => d.status === "pending");
 
   const roleCount = (r: string) => users.filter(u => u.role === r).length;
   const tenants = roleCount("tenant");
@@ -109,8 +125,8 @@ export default function Admin() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Card><CardContent className="p-4 text-center"><p className="text-2xl font-bold text-primary">{users.length}</p><p className="text-sm text-muted-foreground">إجمالي المستخدمين</p></CardContent></Card>
           <Card><CardContent className="p-4 text-center"><p className="text-2xl font-bold text-primary">{last7}</p><p className="text-sm text-muted-foreground">زوار جدد (7 أيام)</p></CardContent></Card>
-          <Card><CardContent className="p-4 text-center"><p className="text-2xl font-bold text-primary">{properties.length + shared.length}</p><p className="text-sm text-muted-foreground">إجمالي الإعلانات</p></CardContent></Card>
-          <Card><CardContent className="p-4 text-center"><p className="text-2xl font-bold text-warning">{pendingProps.length + pendingShared.length}</p><p className="text-sm text-muted-foreground">بانتظار الموافقة</p></CardContent></Card>
+          <Card><CardContent className="p-4 text-center"><p className="text-2xl font-bold text-primary">{properties.length + shared.length + dorms.length}</p><p className="text-sm text-muted-foreground">إجمالي الإعلانات</p></CardContent></Card>
+          <Card><CardContent className="p-4 text-center"><p className="text-2xl font-bold text-warning">{pendingProps.length + pendingShared.length + pendingDorms.length}</p><p className="text-sm text-muted-foreground">بانتظار الموافقة</p></CardContent></Card>
         </div>
 
         {/* Roles */}
@@ -142,6 +158,7 @@ export default function Admin() {
             <TabsTrigger value="pending" className="flex-1">بانتظار المراجعة ({pendingProps.length})</TabsTrigger>
             <TabsTrigger value="properties" className="flex-1">العقارات</TabsTrigger>
             <TabsTrigger value="shared" className="flex-1">السكن المشترك</TabsTrigger>
+            <TabsTrigger value="dorms" className="flex-1">الداخليات</TabsTrigger>
             <TabsTrigger value="users" className="flex-1">المستخدمين</TabsTrigger>
           </TabsList>
 
@@ -226,6 +243,28 @@ export default function Admin() {
                     </Button>
                   )}
                   <Button variant="ghost" size="icon" onClick={() => deleteShared(s.id)}>
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </TabsContent>
+
+          <TabsContent value="dorms" className="space-y-3 mt-4">
+            {dorms.map(d => (
+              <div key={d.id} className="flex items-center justify-between p-3 border rounded-lg">
+                <div>
+                  <p className="font-medium">{d.title}</p>
+                  <p className="text-sm text-muted-foreground">{d.location} - {d.price.toLocaleString()} ج.س</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant={d.status === "pending" ? "secondary" : "default"}>{statusLabel[d.status]}</Badge>
+                  {d.status === "pending" && (
+                    <Button variant="ghost" size="icon" onClick={() => approveDorm(d.id)}>
+                      <Check className="h-4 w-4 text-success" />
+                    </Button>
+                  )}
+                  <Button variant="ghost" size="icon" onClick={() => deleteDorm(d.id)}>
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
