@@ -17,16 +17,19 @@ export default function Dashboard() {
   const { user } = useAuth();
   const [properties, setProperties] = useState<any[]>([]);
   const [shared, setShared] = useState<any[]>([]);
+  const [dorms, setDorms] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     if (!user) return;
-    const [{ data: props }, { data: sh }] = await Promise.all([
+    const [{ data: props }, { data: sh }, { data: dm }] = await Promise.all([
       supabase.from("properties").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
       supabase.from("shared_housing").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
+      supabase.from("dormitories").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
     ]);
     setProperties(props || []);
     setShared(sh || []);
+    setDorms(dm || []);
     setLoading(false);
   };
 
@@ -41,6 +44,12 @@ export default function Dashboard() {
   const deleteShared = async (id: string) => {
     await supabase.from("shared_housing").delete().eq("id", id);
     toast.success("تم حذف السكن المشترك");
+    fetchData();
+  };
+
+  const deleteDorm = async (id: string) => {
+    await supabase.from("dormitories").delete().eq("id", id);
+    toast.success("تم حذف الداخلية");
     fetchData();
   };
 
@@ -88,6 +97,27 @@ export default function Dashboard() {
                       <div className="flex items-center gap-2">
                         <Badge variant={statusVariant[s.status]}>{statusLabel[s.status] || s.status}</Badge>
                         <Button variant="ghost" size="icon" onClick={() => deleteShared(s.id)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader><CardTitle>الداخليات الطلابية ({dorms.length})</CardTitle></CardHeader>
+              <CardContent className="space-y-3">
+                {dorms.length === 0 ? <p className="text-muted-foreground text-sm">لا توجد داخليات</p> :
+                  dorms.map(d => (
+                    <div key={d.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <p className="font-medium">{d.title}</p>
+                        <p className="text-sm text-muted-foreground">{d.location} - {d.price.toLocaleString()} ج.س</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={statusVariant[d.status]}>{statusLabel[d.status] || d.status}</Badge>
+                        <Button variant="ghost" size="icon" onClick={() => deleteDorm(d.id)}>
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
