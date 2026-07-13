@@ -4,6 +4,7 @@ import { MapPin, Phone, MessageCircle, Bed, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { thumb } from "@/lib/image";
 
 interface SharedHousingCardProps {
   title: string;
@@ -13,6 +14,7 @@ interface SharedHousingCardProps {
   available_spots: number;
   phone_number?: string | null;
   video_url?: string | null;
+  shared_housing_images?: { image_url: string }[];
 }
 
 const genderLabel: Record<string, string> = { male: "ذكور", female: "إناث", mixed: "مختلط" };
@@ -22,7 +24,7 @@ const genderColor: Record<string, string> = {
   mixed: "bg-purple-100 text-purple-700 border-purple-200",
 };
 
-export default function SharedHousingCard({ title, price, location, gender, available_spots, phone_number, video_url }: SharedHousingCardProps) {
+export default function SharedHousingCard({ title, price, location, gender, available_spots, phone_number, video_url, shared_housing_images }: SharedHousingCardProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const cleanPhone = (phone_number || "").replace(/\s+/g, "");
@@ -42,6 +44,13 @@ export default function SharedHousingCard({ title, price, location, gender, avai
       <div className="h-1.5 bg-gradient-to-l from-primary to-primary/60" />
       
       <CardContent className="p-5 space-y-4">
+        {shared_housing_images && shared_housing_images.length > 0 && (
+          <div className="grid grid-cols-3 gap-1.5">
+            {shared_housing_images.slice(0, 3).map((im, i) => (
+              <img key={i} src={thumb(im.image_url, { width: 300, quality: 65 })} alt="" loading="lazy" decoding="async" className="w-full h-24 object-cover rounded-md" />
+            ))}
+          </div>
+        )}
         {video_url && (
           <div className="rounded-lg overflow-hidden bg-black aspect-video">
             <video src={video_url} controls playsInline className="w-full h-full" preload="metadata" />

@@ -4,6 +4,7 @@ import { MapPin, Phone, MessageCircle, Bed, Video, GraduationCap, UtensilsCrosse
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { thumb } from "@/lib/image";
 
 interface DormitoryCardProps {
   title: string;
@@ -16,6 +17,7 @@ interface DormitoryCardProps {
   nearby_university?: string | null;
   phone_number?: string | null;
   video_url?: string | null;
+  dormitory_images?: { image_url: string }[];
 }
 
 const genderLabel: Record<string, string> = { male: "ذكور", female: "إناث", mixed: "مختلط" };
@@ -27,7 +29,7 @@ const genderColor: Record<string, string> = {
 
 export default function DormitoryCard({
   title, price, location, gender, available_spots, beds_per_room,
-  meals_included, nearby_university, phone_number, video_url,
+  meals_included, nearby_university, phone_number, video_url, dormitory_images,
 }: DormitoryCardProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -42,6 +44,13 @@ export default function DormitoryCard({
     <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 animate-fade-in group border-0 shadow-md">
       <div className="h-1.5 bg-gradient-to-l from-primary to-primary/60" />
       <CardContent className="p-5 space-y-4">
+        {dormitory_images && dormitory_images.length > 0 && (
+          <div className="grid grid-cols-3 gap-1.5">
+            {dormitory_images.slice(0, 3).map((im, i) => (
+              <img key={i} src={thumb(im.image_url, { width: 300, quality: 65 })} alt="" loading="lazy" decoding="async" className="w-full h-24 object-cover rounded-md" />
+            ))}
+          </div>
+        )}
         {video_url && (
           <div className="rounded-lg overflow-hidden bg-black aspect-video">
             <video src={video_url} controls playsInline className="w-full h-full" preload="metadata" />

@@ -17,7 +17,7 @@ export default function SharedHousing() {
       try {
         const { data, error } = await supabase
           .from("shared_housing")
-          .select("*")
+          .select("*, shared_housing_images(image_url)")
           .eq("status", "approved")
           .order("created_at", { ascending: false });
         if (error) console.error("Shared housing fetch error:", error);
