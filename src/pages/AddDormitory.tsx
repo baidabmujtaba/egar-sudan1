@@ -11,17 +11,26 @@ import { Switch } from "@/components/ui/switch";
 import Navbar from "@/components/Navbar";
 import { toast } from "sonner";
 import { Loader2, Video, X } from "lucide-react";
+import ImageUpload from "@/components/ImageUpload";
 
 export default function AddDormitory() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [video, setVideo] = useState<File | null>(null);
+  const [images, setImages] = useState<File[]>([]);
   const [form, setForm] = useState({
     title: "", price: "", location: "", description: "", phone_number: "",
     gender: "male", beds_per_room: "2", available_spots: "1",
     meals_included: false, nearby_university: "",
   });
+
+  const uploadFile = async (file: File) => {
+    const name = `${user!.id}/${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name}`;
+    const { error } = await supabase.storage.from("property-images").upload(name, file);
+    if (error) throw error;
+    return supabase.storage.from("property-images").getPublicUrl(name).data.publicUrl;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,12 +44,9 @@ export default function AddDormitory() {
           setLoading(false);
           return;
         }
-        const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}-${video.name}`;
-        const { error: upErr } = await supabase.storage.from("property-images").upload(fileName, video);
-        if (upErr) throw upErr;
-        videoUrl = supabase.storage.from("property-images").getPublicUrl(fileName).data.publicUrl;
+        videoUrl = await uploadFile(video);
       }
-      const { error } = await supabase.from("dormitories").insert({
+      const { data: inserted, error } = await supabase.from("dormitories").insert({
         title: form.title,
         price: Number(form.price),
         location: form.location,
@@ -54,8 +60,16 @@ export default function AddDormitory() {
         user_id: user.id,
         status: "pending",
         video_url: videoUrl,
-      });
+      }).select("id").single();
       if (error) throw error;
+
+      if (images.length && inserted?.id) {
+        const urls = await Promise.all(images.map(uploadFile));
+        const rows = urls.map(u => ({ dormitory_id: inserted.id, image_url: u }));
+        const { error: imgErr } = await supabase.from("dormitory_images").insert(rows);
+        if (imgErr) console.error(imgErr);
+      }
+
       toast.success("تم إضافة الداخلية! سيتم مراجعتها.");
       navigate("/dashboard");
     } catch (err: any) {
@@ -98,6 +112,7 @@ export default function AddDormitory() {
               </div>
               <div><label className="block text-sm font-medium mb-1">رقم الهاتف</label><Input value={form.phone_number} onChange={(e) => setForm({ ...form, phone_number: e.target.value })} required /></div>
               <div><label className="block text-sm font-medium mb-1">الوصف</label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} /></div>
+              <ImageUpload files={images} onChange={setImages} maxFiles={5} />
               <div className="space-y-2">
                 <label className="block text-sm font-medium">فيديو الداخلية (اختياري - حتى 50 ميجا)</label>
                 {video ? (
