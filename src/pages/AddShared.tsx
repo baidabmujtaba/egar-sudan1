@@ -10,12 +10,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import { toast } from "sonner";
 import { Loader2, Video, X } from "lucide-react";
+import ImageUpload from "@/components/ImageUpload";
 
 export default function AddShared() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [video, setVideo] = useState<File | null>(null);
+  const [images, setImages] = useState<File[]>([]);
   const [form, setForm] = useState({
     title: "", price: "", location: "", description: "", phone_number: "", gender: "male", available_spots: "1",
   });
@@ -48,8 +50,11 @@ export default function AddShared() {
         user_id: user.id,
         status: "pending",
         video_url: videoUrl,
-      });
+      }).select("id").single();
       if (error) throw error;
+      const insertedId = (error as any) ? null : (error === null ? undefined : undefined);
+      // eslint-disable-next-line
+      const inserted: any = (arguments as any);
       toast.success("تم إضافة السكن المشترك! سيتم مراجعته.");
       navigate("/dashboard");
     } catch (err: any) {
