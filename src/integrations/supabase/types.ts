@@ -71,6 +71,35 @@ export type Database = {
         }
         Relationships: []
       }
+      dormitory_images: {
+        Row: {
+          created_at: string
+          dormitory_id: string
+          id: string
+          image_url: string
+        }
+        Insert: {
+          created_at?: string
+          dormitory_id: string
+          id?: string
+          image_url: string
+        }
+        Update: {
+          created_at?: string
+          dormitory_id?: string
+          id?: string
+          image_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dormitory_images_dormitory_id_fkey"
+            columns: ["dormitory_id"]
+            isOneToOne: false
+            referencedRelation: "dormitories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -219,6 +248,35 @@ export type Database = {
           video_url?: string | null
         }
         Relationships: []
+      }
+      shared_housing_images: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          shared_housing_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          shared_housing_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          shared_housing_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_housing_images_shared_housing_id_fkey"
+            columns: ["shared_housing_id"]
+            isOneToOne: false
+            referencedRelation: "shared_housing"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
