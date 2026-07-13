@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Phone, MessageCircle, Video, ChevronLeft, ChevronRight } from "lucide-react";
+import { MapPin, Phone, MessageCircle, Video, ChevronLeft, ChevronRight, User, Briefcase, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRef, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -19,9 +19,10 @@ interface PropertyCardProps {
   rental_period?: string;
   video_url?: string | null;
   images?: { image_url: string }[];
+  advertiser?: { full_name: string; role: string } | null;
 }
 
-export default function PropertyCard({ id, title, price, location, property_type, phone_number, currency, rental_period, video_url, images }: PropertyCardProps) {
+export default function PropertyCard({ id, title, price, location, property_type, phone_number, currency, rental_period, video_url, images, advertiser }: PropertyCardProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const firstImage = images?.[0]?.image_url;
@@ -119,6 +120,21 @@ export default function PropertyCard({ id, title, price, location, property_type
           <p className="text-sm pt-1"><span className="font-bold text-foreground">{price.toLocaleString()} {currencyLabel}</span> <span className="text-muted-foreground">{periodLabel}</span></p>
         </Link>
       </div>
+      {advertiser && (
+        <div className="pt-2 flex items-center gap-2 text-xs text-muted-foreground">
+          <User className="h-3.5 w-3.5" />
+          <span className="truncate max-w-[50%]">{advertiser.full_name || "معلن"}</span>
+          {advertiser.role === "broker" ? (
+            <Badge variant="outline" className="gap-1 border-amber-300 bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"><Briefcase className="h-3 w-3" />وسيط</Badge>
+          ) : advertiser.role === "owner" ? (
+            <Badge variant="outline" className="gap-1 border-emerald-300 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"><Home className="h-3 w-3" />المالك</Badge>
+          ) : advertiser.role === "admin" ? (
+            <Badge variant="outline">مشرف</Badge>
+          ) : (
+            <Badge variant="outline">مستأجر</Badge>
+          )}
+        </div>
+      )}
       <div className="pt-3 flex gap-2">
         <a href={user && phone_number ? `tel:${cleanPhone}` : "#"} className="flex-1" onClick={e => { if (requireLogin(e)) return; e.stopPropagation(); }}>
           <Button variant="outline" size="sm" className="w-full rounded-full"><Phone className="h-4 w-4 ml-1" />اتصال</Button>
