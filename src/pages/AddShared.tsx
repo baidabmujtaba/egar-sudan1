@@ -10,15 +10,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import { toast } from "sonner";
 import { Loader2, Video, X } from "lucide-react";
+import ImageUpload from "@/components/ImageUpload";
 
 export default function AddShared() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [video, setVideo] = useState<File | null>(null);
+  const [images, setImages] = useState<File[]>([]);
   const [form, setForm] = useState({
     title: "", price: "", location: "", description: "", phone_number: "", gender: "male", available_spots: "1",
   });
+
+  const uploadFile = async (file: File) => {
+    const name = `${user!.id}/${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name}`;
+    const { error } = await supabase.storage.from("property-images").upload(name, file);
+    if (error) throw error;
+    return supabase.storage.from("property-images").getPublicUrl(name).data.publicUrl;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,17 +36,10 @@ export default function AddShared() {
     try {
       let videoUrl: string | null = null;
       if (video) {
-        if (video.size > 50 * 1024 * 1024) {
-          toast.error("حجم الفيديو يجب أن يكون أقل من 50 ميجا");
-          setLoading(false);
-          return;
-        }
-        const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}-${video.name}`;
-        const { error: upErr } = await supabase.storage.from("property-images").upload(fileName, video);
-        if (upErr) throw upErr;
-        videoUrl = supabase.storage.from("property-images").getPublicUrl(fileName).data.publicUrl;
+        if (video.size > 50 * 1024 * 1024) { toast.error("حجم الفيديو يجب أن يكون أقل من 50 ميجا"); setLoading(false); return; }
+        videoUrl = await uploadFile(video);
       }
-      const { error } = await supabase.from("shared_housing").insert({
+      const { data: inserted, error } = await supabase.from("shared_housing").insert({
         title: form.title,
         price: Number(form.price),
         location: form.location,
@@ -48,8 +50,16 @@ export default function AddShared() {
         user_id: user.id,
         status: "pending",
         video_url: videoUrl,
-      });
+      }).select("id").single();
       if (error) throw error;
+
+      if (images.length && inserted?.id) {
+        const urls = await Promise.all(images.map(uploadFile));
+        const rows = urls.map(u => ({ shared_housing_id: inserted.id, image_url: u }));
+        const { error: imgErr } = await supabase.from("shared_housing_images").insert(rows);
+        if (imgErr) console.error(imgErr);
+      }
+
       toast.success("تم إضافة السكن المشترك! سيتم مراجعته.");
       navigate("/dashboard");
     } catch (err: any) {
@@ -84,6 +94,9 @@ export default function AddShared() {
               <div><label className="block text-sm font-medium mb-1">الأماكن المتاحة</label><Input type="number" min="1" value={form.available_spots} onChange={(e) => setForm({ ...form, available_spots: e.target.value })} required /></div>
               <div><label className="block text-sm font-medium mb-1">رقم الهاتف</label><Input value={form.phone_number} onChange={(e) => setForm({ ...form, phone_number: e.target.value })} required /></div>
               <div><label className="block text-sm font-medium mb-1">الوصف</label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} /></div>
+
+              <ImageUpload files={images} onChange={setImages} maxFiles={5} />
+
               <div className="space-y-2">
                 <label className="block text-sm font-medium">فيديو السكن (اختياري - حتى 50 ميجا)</label>
                 {video ? (

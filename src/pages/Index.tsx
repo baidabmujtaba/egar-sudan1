@@ -33,6 +33,7 @@ export default function Index() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [properties, setProperties] = useState<any[]>([]);
+  const [advertisers, setAdvertisers] = useState<Record<string, { full_name: string; role: string }>>({});
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -86,6 +87,7 @@ export default function Index() {
       setHasMore(!end);
       setPage(0);
       setLoading(false);
+      fetchAdvertisers(rows);
     })();
   }, [loadPage]);
 
@@ -98,6 +100,7 @@ export default function Index() {
       const next = page + 1;
       const { rows, end } = await loadPage(next);
       setProperties(prev => [...prev, ...rows]);
+      fetchAdvertisers(rows);
       setHasMore(!end);
       setPage(next);
       setLoadingMore(false);
@@ -105,6 +108,18 @@ export default function Index() {
     observer.observe(el);
     return () => observer.disconnect();
   }, [page, hasMore, loading, loadingMore, loadPage]);
+
+  const fetchAdvertisers = async (rows: any[]) => {
+    const ids = Array.from(new Set(rows.map(r => r.user_id).filter(Boolean)));
+    if (ids.length === 0) return;
+    const { data } = await supabase.rpc("get_advertisers", { _user_ids: ids });
+    if (!data) return;
+    setAdvertisers(prev => {
+      const next = { ...prev };
+      (data as any[]).forEach(a => { next[a.user_id] = { full_name: a.full_name, role: a.role }; });
+      return next;
+    });
+  };
 
   const handleCategory = (val: string) => {
     if (val === "shared") {
@@ -340,7 +355,7 @@ export default function Index() {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
               {filtered.map((p) => (
-                <PropertyCard key={p.id} {...p} images={p.property_images} />
+                <PropertyCard key={p.id} {...p} images={p.property_images} advertiser={advertisers[p.user_id]} />
               ))}
             </div>
             <div ref={sentinelRef} className="h-12" />

@@ -22,7 +22,7 @@ export default function Dormitories() {
       try {
         const { data, error } = await supabase
           .from("dormitories")
-          .select("*")
+          .select("*, dormitory_images(image_url)")
           .eq("status", "approved")
           .order("created_at", { ascending: false });
         if (error) console.error("Dormitories fetch error:", error);

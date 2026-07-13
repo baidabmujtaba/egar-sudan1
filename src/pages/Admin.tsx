@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Navbar from "@/components/Navbar";
 import { toast } from "sonner";
-import { Check, Trash2, Eye, Pencil, Users, Home, Building2, UserCheck } from "lucide-react";
+import { Check, Trash2, Eye, Pencil, Users, Home, Building2, UserCheck, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { thumb } from "@/lib/image";
@@ -114,6 +114,24 @@ export default function Admin() {
     days.push({ day: label, count });
   }
   const last7 = days.slice(-7).reduce((a, b) => a + b.count, 0);
+
+  const exportUsersCSV = () => {
+    const headers = ["الاسم", "رقم الهاتف", "الدور", "تاريخ التسجيل"];
+    const roleAr: Record<string, string> = { tenant: "مستأجر", owner: "مالك", broker: "وسيط", admin: "مشرف" };
+    const esc = (v: any) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const rows = users.map(u => [u.full_name, u.phone_number, roleAr[u.role] || u.role, new Date(u.created_at).toLocaleString("ar-EG")].map(esc).join(","));
+    const csv = "\uFEFF" + [headers.map(esc).join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `egark-users-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success(`تم تنزيل بيانات ${users.length} مستخدم`);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -273,6 +291,11 @@ export default function Admin() {
           </TabsContent>
 
           <TabsContent value="users" className="space-y-3 mt-4">
+            <div className="flex justify-end">
+              <Button size="sm" variant="outline" onClick={exportUsersCSV}>
+                <Download className="h-4 w-4 ml-1" />تنزيل بيانات المستخدمين (CSV)
+              </Button>
+            </div>
             {users.map(u => (
               <div key={u.id} className="flex items-center justify-between p-3 border rounded-lg">
                 <div>
