@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ImageUpload from "@/components/ImageUpload";
 import Navbar from "@/components/Navbar";
 import { toast } from "sonner";
-import { Loader2, Video, X } from "lucide-react";
+import { Loader2, Video, X, Landmark, Receipt } from "lucide-react";
 
 export default function AddProperty() {
   const { user } = useAuth();
@@ -18,6 +18,11 @@ export default function AddProperty() {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<File[]>([]);
   const [video, setVideo] = useState<File | null>(null);
+  const [receipt, setReceipt] = useState<File | null>(null);
+  const receiptPreview = useMemo(() => (receipt ? URL.createObjectURL(receipt) : null), [receipt]);
+  useEffect(() => {
+    return () => { if (receiptPreview) URL.revokeObjectURL(receiptPreview); };
+  }, [receiptPreview]);
   const videoPreview = useMemo(() => (video ? URL.createObjectURL(video) : null), [video]);
   useEffect(() => {
     return () => { if (videoPreview) URL.revokeObjectURL(videoPreview); };
@@ -45,6 +50,9 @@ export default function AddProperty() {
     if (images.length < 5 && !video) {
       return toast.error("يجب رفع 5 صور على الأقل أو فيديو واحد للعقار");
     }
+    if (!receipt) {
+      return toast.error("يجب إرفاق صورة إشعار الدفع من بنكك");
+    }
     setLoading(true);
     try {
       let videoUrl: string | null = null;
@@ -56,6 +64,7 @@ export default function AddProperty() {
         }
         videoUrl = await uploadImage(video);
       }
+      const receiptUrl = await uploadImage(receipt);
       const { data: property, error } = await supabase
         .from("properties")
         .insert({
@@ -70,6 +79,7 @@ export default function AddProperty() {
           user_id: user.id,
           status: "pending",
           video_url: videoUrl,
+          payment_receipt_url: receiptUrl,
         })
         .select()
         .single();
@@ -164,6 +174,55 @@ export default function AddProperty() {
               <p className="text-xs text-muted-foreground -mt-2">
                 الحد الأدنى: 5 صور أو فيديو واحد على الأقل
               </p>
+              <div className="rounded-lg border-2 border-primary/30 bg-primary/5 p-4 space-y-3">
+                <div className="flex items-center gap-2 text-primary font-semibold">
+                  <Landmark className="h-5 w-5" />
+                  <span>الدفع عبر بنك الخرطوم (بنكك)</span>
+                </div>
+                <div className="text-sm space-y-1">
+                  <div className="flex justify-between gap-2">
+                    <span className="text-muted-foreground">رقم الحساب:</span>
+                    <span className="font-mono font-bold" dir="ltr">2816133</span>
+                  </div>
+                  <div className="flex justify-between gap-2">
+                    <span className="text-muted-foreground">باسم:</span>
+                    <span className="font-medium">محمد المجتبى عبدالإله محمد عبدالرحمن</span>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  بعد التحويل، الرجاء إرفاق صورة إشعار الدفع أدناه لتأكيد الطلب.
+                </p>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium">صورة إشعار الدفع *</label>
+                  {receipt ? (
+                    <div className="rounded-lg border p-3 bg-background space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Receipt className="h-4 w-4 text-primary shrink-0" />
+                          <span className="text-sm truncate">{receipt.name}</span>
+                        </div>
+                        <button type="button" onClick={() => setReceipt(null)} className="p-1 rounded hover:bg-destructive/10">
+                          <X className="h-4 w-4 text-destructive" />
+                        </button>
+                      </div>
+                      {receiptPreview && (
+                        <img src={receiptPreview} alt="إشعار الدفع" className="w-full rounded-md max-h-64 object-contain bg-black/5" />
+                      )}
+                    </div>
+                  ) : (
+                    <label className="flex items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/40 p-4 cursor-pointer hover:border-primary transition-colors text-sm text-muted-foreground bg-background">
+                      <Receipt className="h-5 w-5" />
+                      <span>اضغط لرفع صورة الإشعار</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => setReceipt(e.target.files?.[0] || null)}
+                      />
+                    </label>
+                  )}
+                </div>
+              </div>
               <div className="space-y-2">
                 <label className="block text-sm font-medium">فيديو للعقار (اختياري - حتى 50 ميجا)</label>
                 {video ? (

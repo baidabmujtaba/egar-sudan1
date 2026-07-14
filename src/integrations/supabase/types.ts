@@ -134,6 +134,7 @@ export type Database = {
           description: string | null
           id: string
           location: string
+          payment_receipt_url: string | null
           phone_number: string
           price: number
           property_type: string
@@ -149,6 +150,7 @@ export type Database = {
           description?: string | null
           id?: string
           location: string
+          payment_receipt_url?: string | null
           phone_number: string
           price: number
           property_type: string
@@ -164,6 +166,7 @@ export type Database = {
           description?: string | null
           id?: string
           location?: string
+          payment_receipt_url?: string | null
           phone_number?: string
           price?: number
           property_type?: string
