@@ -70,7 +70,7 @@ export default function AddProperty() {
         }
         videoUrl = await uploadImage(video);
       }
-      const receiptUrl = await uploadImage(receipt);
+      const receiptUrl = receipt ? await uploadImage(receipt) : null;
       const { data: property, error } = await supabase
         .from("properties")
         .insert({
