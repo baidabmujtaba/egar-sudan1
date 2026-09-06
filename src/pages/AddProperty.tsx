@@ -27,9 +27,14 @@ export default function AddProperty() {
   useEffect(() => {
     return () => { if (videoPreview) URL.revokeObjectURL(videoPreview); };
   }, [videoPreview]);
+  const [pay, setPay] = useState<any | null>(null);
+  useEffect(() => {
+    supabase.from("payment_settings").select("*").limit(1).maybeSingle().then(({ data }) => setPay(data));
+  }, []);
   const [form, setForm] = useState({
     title: "", price: "", location: "", description: "", phone_number: "", property_type: "شقة", currency: "SDG", rental_period: "شهري",
   });
+
 
   if (!user) {
     return <Navigate to="/register" replace state={{ from: "/add-property" }} />;
