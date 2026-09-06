@@ -55,9 +55,10 @@ export default function AddProperty() {
     if (images.length < 5 && !video) {
       return toast.error("يجب رفع 5 صور على الأقل أو فيديو واحد للعقار");
     }
-    if (!receipt) {
-      return toast.error("يجب إرفاق صورة إشعار الدفع من بنكك");
+    if (pay?.payment_required !== false && !receipt) {
+      return toast.error("يجب إرفاق صورة إشعار الدفع");
     }
+
     setLoading(true);
     try {
       let videoUrl: string | null = null;
