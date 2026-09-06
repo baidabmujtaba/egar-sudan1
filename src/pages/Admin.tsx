@@ -12,6 +12,8 @@ import { Check, Trash2, Eye, Pencil, Users, Home, Building2, UserCheck, Download
 import { useNavigate } from "react-router-dom";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { thumb } from "@/lib/image";
+import AdminPayments from "@/components/AdminPayments";
+
 
 export default function Admin() {
   const { isAdmin, loading: authLoading } = useAuth();
