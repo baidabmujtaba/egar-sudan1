@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
+import { brokeredPreviewStorage } from './previewAuthStorage';
 
 const SUPABASE_URL = "https://dtqxhwmkfygtaiijjyle.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0cXhod21rZnlndGFpaWpqeWxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzODMyMzMsImV4cCI6MjA5MDk1OTIzM30.OQ_1oZDRwSud9avHLsEOb4XlQMsTzNTkie7Am-u1Bow";
@@ -11,7 +12,7 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     },
   },
   auth: {
-    storage: localStorage,
+    storage: brokeredPreviewStorage(),
     persistSession: true,
     autoRefreshToken: true,
   }

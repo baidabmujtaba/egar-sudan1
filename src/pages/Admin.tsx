@@ -12,6 +12,8 @@ import { Check, Trash2, Eye, Pencil, Users, Home, Building2, UserCheck, Download
 import { useNavigate } from "react-router-dom";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { thumb } from "@/lib/image";
+import AdminPayments from "@/components/AdminPayments";
+
 
 export default function Admin() {
   const { isAdmin, loading: authLoading } = useAuth();
@@ -178,6 +180,8 @@ export default function Admin() {
             <TabsTrigger value="shared" className="flex-1">السكن المشترك</TabsTrigger>
             <TabsTrigger value="dorms" className="flex-1">الداخليات</TabsTrigger>
             <TabsTrigger value="users" className="flex-1">المستخدمين</TabsTrigger>
+            <TabsTrigger value="payments" className="flex-1">المدفوعات</TabsTrigger>
+
           </TabsList>
 
           <TabsContent value="pending" className="space-y-4 mt-4">
@@ -306,7 +310,12 @@ export default function Admin() {
               </div>
             ))}
           </TabsContent>
+
+          <TabsContent value="payments" className="mt-4">
+            <AdminPayments properties={properties} onApprove={approveProperty} onReject={deleteProperty} />
+          </TabsContent>
         </Tabs>
+
 
         <Dialog open={!!previewProp} onOpenChange={(o) => !o && setPreviewProp(null)}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir="rtl">
