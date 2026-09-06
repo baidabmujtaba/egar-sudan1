@@ -100,6 +100,45 @@ export type Database = {
           },
         ]
       }
+      payment_settings: {
+        Row: {
+          account_name: string
+          account_number: string
+          bank_name: string
+          created_at: string
+          currency: string
+          id: string
+          instructions: string | null
+          listing_price: number
+          payment_required: boolean
+          updated_at: string
+        }
+        Insert: {
+          account_name?: string
+          account_number?: string
+          bank_name?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          instructions?: string | null
+          listing_price?: number
+          payment_required?: boolean
+          updated_at?: string
+        }
+        Update: {
+          account_name?: string
+          account_number?: string
+          bank_name?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          instructions?: string | null
+          listing_price?: number
+          payment_required?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
