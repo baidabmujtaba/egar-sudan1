@@ -183,23 +183,34 @@ export default function AddProperty() {
               <div className="rounded-lg border-2 border-primary/30 bg-primary/5 p-4 space-y-3">
                 <div className="flex items-center gap-2 text-primary font-semibold">
                   <Landmark className="h-5 w-5" />
-                  <span>الدفع عبر بنك الخرطوم (بنكك)</span>
+                  <span>الدفع عبر {pay?.bank_name || "بنك الخرطوم (بنكك)"}</span>
                 </div>
                 <div className="text-sm space-y-1">
                   <div className="flex justify-between gap-2">
                     <span className="text-muted-foreground">رقم الحساب:</span>
-                    <span className="font-mono font-bold" dir="ltr">2816133</span>
+                    <span className="font-mono font-bold" dir="ltr">{pay?.account_number || "2816133"}</span>
                   </div>
                   <div className="flex justify-between gap-2">
                     <span className="text-muted-foreground">باسم:</span>
-                    <span className="font-medium">محمد المجتبى عبدالإله محمد عبدالرحمن</span>
+                    <span className="font-medium">{pay?.account_name || "محمد المجتبى عبدالإله محمد عبدالرحمن"}</span>
                   </div>
+                  {Number(pay?.listing_price) > 0 && (
+                    <div className="flex justify-between gap-2">
+                      <span className="text-muted-foreground">رسوم النشر:</span>
+                      <span className="font-bold">
+                        {Number(pay.listing_price).toLocaleString()} {pay.currency === "USD" ? "دولار" : "ج.س"}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  بعد التحويل، الرجاء إرفاق صورة إشعار الدفع أدناه لتأكيد الطلب.
+                  {pay?.instructions || "بعد التحويل، الرجاء إرفاق صورة إشعار الدفع أدناه لتأكيد الطلب."}
                 </p>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium">صورة إشعار الدفع *</label>
+                  <label className="block text-sm font-medium">
+                    صورة إشعار الدفع {pay?.payment_required === false ? "(اختياري)" : "*"}
+                  </label>
+
                   {receipt ? (
                     <div className="rounded-lg border p-3 bg-background space-y-2">
                       <div className="flex items-center justify-between gap-2">
