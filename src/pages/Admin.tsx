@@ -178,6 +178,8 @@ export default function Admin() {
             <TabsTrigger value="shared" className="flex-1">السكن المشترك</TabsTrigger>
             <TabsTrigger value="dorms" className="flex-1">الداخليات</TabsTrigger>
             <TabsTrigger value="users" className="flex-1">المستخدمين</TabsTrigger>
+            <TabsTrigger value="payments" className="flex-1">المدفوعات</TabsTrigger>
+
           </TabsList>
 
           <TabsContent value="pending" className="space-y-4 mt-4">
