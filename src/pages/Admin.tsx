@@ -306,7 +306,12 @@ export default function Admin() {
               </div>
             ))}
           </TabsContent>
+
+          <TabsContent value="payments" className="mt-4">
+            <AdminPayments properties={properties} onApprove={approveProperty} onReject={deleteProperty} />
+          </TabsContent>
         </Tabs>
+
 
         <Dialog open={!!previewProp} onOpenChange={(o) => !o && setPreviewProp(null)}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir="rtl">
