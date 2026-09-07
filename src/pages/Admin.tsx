@@ -33,13 +33,18 @@ export default function Admin() {
     }
   }, [isAdmin, authLoading]);
 
+  const [dormImages, setDormImages] = useState<Record<string, string[]>>({});
+  const [sharedImages, setSharedImages] = useState<Record<string, string[]>>({});
+
   const fetchAll = async () => {
-    const [{ data: p }, { data: s }, { data: d }, { data: u }, { data: imgs }] = await Promise.all([
+    const [{ data: p }, { data: s }, { data: d }, { data: u }, { data: imgs }, { data: dimgs }, { data: simgs }] = await Promise.all([
       supabase.from("properties").select("*").order("created_at", { ascending: false }),
       supabase.from("shared_housing").select("*").order("created_at", { ascending: false }),
       supabase.from("dormitories").select("*").order("created_at", { ascending: false }),
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("property_images").select("property_id,image_url"),
+      supabase.from("dormitory_images").select("dormitory_id,image_url"),
+      supabase.from("shared_housing_images").select("shared_housing_id,image_url"),
     ]);
     setProperties(p || []);
     setShared(s || []);
@@ -50,8 +55,15 @@ export default function Admin() {
       (map[r.property_id] ||= []).push(r.image_url);
     });
     setImages(map);
+    const dmap: Record<string, string[]> = {};
+    (dimgs || []).forEach((r: any) => { (dmap[r.dormitory_id] ||= []).push(r.image_url); });
+    setDormImages(dmap);
+    const smap: Record<string, string[]> = {};
+    (simgs || []).forEach((r: any) => { (smap[r.shared_housing_id] ||= []).push(r.image_url); });
+    setSharedImages(smap);
     setLoading(false);
   };
+
 
   useEffect(() => { if (isAdmin) fetchAll(); }, [isAdmin]);
 
