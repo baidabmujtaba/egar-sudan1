@@ -7,6 +7,8 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { thumb, thumbSrcSet } from "@/lib/image";
+import AdvertiserTag from "@/components/AdvertiserTag";
+
 
 interface PropertyCardProps {
   id: string;
