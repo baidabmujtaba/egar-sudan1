@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { thumb } from "@/lib/image";
 import AdminPayments from "@/components/AdminPayments";
+import AdminNotifications from "@/components/AdminNotifications";
 
 
 export default function Admin() {
@@ -33,13 +34,18 @@ export default function Admin() {
     }
   }, [isAdmin, authLoading]);
 
+  const [dormImages, setDormImages] = useState<Record<string, string[]>>({});
+  const [sharedImages, setSharedImages] = useState<Record<string, string[]>>({});
+
   const fetchAll = async () => {
-    const [{ data: p }, { data: s }, { data: d }, { data: u }, { data: imgs }] = await Promise.all([
+    const [{ data: p }, { data: s }, { data: d }, { data: u }, { data: imgs }, { data: dimgs }, { data: simgs }] = await Promise.all([
       supabase.from("properties").select("*").order("created_at", { ascending: false }),
       supabase.from("shared_housing").select("*").order("created_at", { ascending: false }),
       supabase.from("dormitories").select("*").order("created_at", { ascending: false }),
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("property_images").select("property_id,image_url"),
+      supabase.from("dormitory_images").select("dormitory_id,image_url"),
+      supabase.from("shared_housing_images").select("shared_housing_id,image_url"),
     ]);
     setProperties(p || []);
     setShared(s || []);
@@ -50,8 +56,15 @@ export default function Admin() {
       (map[r.property_id] ||= []).push(r.image_url);
     });
     setImages(map);
+    const dmap: Record<string, string[]> = {};
+    (dimgs || []).forEach((r: any) => { (dmap[r.dormitory_id] ||= []).push(r.image_url); });
+    setDormImages(dmap);
+    const smap: Record<string, string[]> = {};
+    (simgs || []).forEach((r: any) => { (smap[r.shared_housing_id] ||= []).push(r.image_url); });
+    setSharedImages(smap);
     setLoading(false);
   };
+
 
   useEffect(() => { if (isAdmin) fetchAll(); }, [isAdmin]);
 
@@ -98,6 +111,13 @@ export default function Admin() {
   const pendingProps = properties.filter(p => p.status === "pending");
   const pendingShared = shared.filter(s => s.status === "pending");
   const pendingDorms = dorms.filter(d => d.status === "pending");
+
+  const notifItems = [
+    ...pendingProps.map((p) => ({ kind: "property" as const, data: p, images: images[p.id] || [] })),
+    ...pendingDorms.map((d) => ({ kind: "dormitory" as const, data: d, images: dormImages[d.id] || [] })),
+    ...pendingShared.map((s) => ({ kind: "shared" as const, data: s, images: sharedImages[s.id] || [] })),
+  ];
+  const notifCount = notifItems.length;
 
   const roleCount = (r: string) => users.filter(u => u.role === r).length;
   const tenants = roleCount("tenant");
@@ -173,8 +193,11 @@ export default function Admin() {
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="properties" dir="rtl">
-          <TabsList className="w-full">
+        <Tabs defaultValue="notifications" dir="rtl">
+          <TabsList className="w-full flex-wrap h-auto">
+            <TabsTrigger value="notifications" className="flex-1">
+              الإشعارات{notifCount > 0 ? ` (${notifCount})` : ""}
+            </TabsTrigger>
             <TabsTrigger value="pending" className="flex-1">بانتظار المراجعة ({pendingProps.length})</TabsTrigger>
             <TabsTrigger value="properties" className="flex-1">العقارات</TabsTrigger>
             <TabsTrigger value="shared" className="flex-1">السكن المشترك</TabsTrigger>
@@ -184,7 +207,16 @@ export default function Admin() {
 
           </TabsList>
 
+          <TabsContent value="notifications" className="mt-4">
+            <AdminNotifications
+              items={notifItems}
+              onApprove={(kind, id) => kind === "property" ? approveProperty(id) : kind === "dormitory" ? approveDorm(id) : approveShared(id)}
+              onReject={(kind, id) => kind === "property" ? deleteProperty(id) : kind === "dormitory" ? deleteDorm(id) : deleteShared(id)}
+            />
+          </TabsContent>
+
           <TabsContent value="pending" className="space-y-4 mt-4">
+
             {pendingProps.length === 0 && <p className="text-center text-muted-foreground py-8">لا توجد عقارات قيد المراجعة</p>}
             {pendingProps.map(p => {
               const imgs = images[p.id] || [];
