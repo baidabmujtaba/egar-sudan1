@@ -185,8 +185,11 @@ export default function Admin() {
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="properties" dir="rtl">
-          <TabsList className="w-full">
+        <Tabs defaultValue="notifications" dir="rtl">
+          <TabsList className="w-full flex-wrap h-auto">
+            <TabsTrigger value="notifications" className="flex-1">
+              الإشعارات{notifCount > 0 ? ` (${notifCount})` : ""}
+            </TabsTrigger>
             <TabsTrigger value="pending" className="flex-1">بانتظار المراجعة ({pendingProps.length})</TabsTrigger>
             <TabsTrigger value="properties" className="flex-1">العقارات</TabsTrigger>
             <TabsTrigger value="shared" className="flex-1">السكن المشترك</TabsTrigger>
@@ -196,7 +199,16 @@ export default function Admin() {
 
           </TabsList>
 
+          <TabsContent value="notifications" className="mt-4">
+            <AdminNotifications
+              items={notifItems}
+              onApprove={(kind, id) => kind === "property" ? approveProperty(id) : kind === "dormitory" ? approveDorm(id) : approveShared(id)}
+              onReject={(kind, id) => kind === "property" ? deleteProperty(id) : kind === "dormitory" ? deleteDorm(id) : deleteShared(id)}
+            />
+          </TabsContent>
+
           <TabsContent value="pending" className="space-y-4 mt-4">
+
             {pendingProps.length === 0 && <p className="text-center text-muted-foreground py-8">لا توجد عقارات قيد المراجعة</p>}
             {pendingProps.map(p => {
               const imgs = images[p.id] || [];
