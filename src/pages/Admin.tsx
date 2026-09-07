@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { thumb } from "@/lib/image";
 import AdminPayments from "@/components/AdminPayments";
+import AdminNotifications from "@/components/AdminNotifications";
 
 
 export default function Admin() {
@@ -110,6 +111,13 @@ export default function Admin() {
   const pendingProps = properties.filter(p => p.status === "pending");
   const pendingShared = shared.filter(s => s.status === "pending");
   const pendingDorms = dorms.filter(d => d.status === "pending");
+
+  const notifItems = [
+    ...pendingProps.map((p) => ({ kind: "property" as const, data: p, images: images[p.id] || [] })),
+    ...pendingDorms.map((d) => ({ kind: "dormitory" as const, data: d, images: dormImages[d.id] || [] })),
+    ...pendingShared.map((s) => ({ kind: "shared" as const, data: s, images: sharedImages[s.id] || [] })),
+  ];
+  const notifCount = notifItems.length;
 
   const roleCount = (r: string) => users.filter(u => u.role === r).length;
   const tenants = roleCount("tenant");
