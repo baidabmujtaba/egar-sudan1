@@ -1,123 +1,32 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Home, Plus, User, Shield, LogOut, Menu, X, Users, GraduationCap } from "lucide-react";
-import { useState } from "react";
+import { Home, Plus, UserRound, Shield, LogOut, Menu, Heart, Users, GraduationCap } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export default function Navbar() {
   const { user, profile, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
-  };
-
-  return (
-    <nav className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-md">
-      <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="gradient-primary flex h-9 w-9 items-center justify-center rounded-lg">
-            <Home className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <span className="text-xl font-bold text-gradient">EGARK</span>
-        </Link>
-
-        {/* Mobile: login button (top-left) + menu */}
-        <div className="md:hidden flex items-center gap-2">
-          {user ? (
-            <Button variant="outline" size="sm" onClick={handleSignOut} className="rounded-full">
-              <LogOut className="h-4 w-4 ml-1" />خروج
-            </Button>
-          ) : (
-            <Link to="/login">
-              <Button size="sm" className="rounded-full">تسجيل الدخول</Button>
-            </Link>
-          )}
-          <button className="p-2" onClick={() => setOpen(!open)} aria-label="القائمة">
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
-
-        {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-3">
-          <Link to="/properties">
-            <Button variant="ghost" size="sm">العقارات</Button>
-          </Link>
-          <Link to="/shared-housing">
-            <Button variant="ghost" size="sm">شواغر</Button>
-          </Link>
-          <Link to="/dormitories">
-            <Button variant="ghost" size="sm"><GraduationCap className="h-4 w-4 ml-1" />داخليات</Button>
-          </Link>
-          {user ? (
-            <>
-              <Link to="/add-property">
-                <Button variant="ghost" size="sm"><Plus className="h-4 w-4 ml-1" />إضافة عقار</Button>
-              </Link>
-              <Link to="/add-shared">
-                <Button variant="ghost" size="sm"><Users className="h-4 w-4 ml-1" />إضافة شاغر</Button>
-              </Link>
-              <Link to="/dashboard">
-                <Button variant="ghost" size="sm"><User className="h-4 w-4 ml-1" />لوحتي</Button>
-              </Link>
-              {isAdmin && (
-                <Link to="/admin">
-                  <Button variant="ghost" size="sm"><Shield className="h-4 w-4 ml-1" />الإدارة</Button>
-                </Link>
-              )}
-              <Button variant="outline" size="sm" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4 ml-1" />خروج
-              </Button>
-            </>
-          ) : (
-            <Link to="/login">
-              <Button size="sm">تسجيل الدخول</Button>
-            </Link>
-          )}
-        </div>
+  return <header className="border-b bg-card">
+    <div className="container flex h-[68px] items-center justify-between gap-3 md:h-20">
+      <Link to="/" className="flex shrink-0 items-center gap-2" aria-label="EGARK الرئيسية"><span className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-primary-foreground"><Home className="h-5 w-5" /></span><span className="text-[23px] font-extrabold text-primary">EGARK</span></Link>
+      <nav className="hidden items-center gap-1 lg:flex" aria-label="الأقسام"><Button asChild variant="ghost" className="rounded-full"><Link to="/properties">العقارات</Link></Button><Button asChild variant="ghost" className="rounded-full"><Link to="/shared-housing">السكن المشترك</Link></Button><Button asChild variant="ghost" className="rounded-full"><Link to="/dormitories">الداخليات</Link></Button></nav>
+      <div className="flex items-center gap-2">
+        <Button asChild variant="ghost" className="hidden rounded-full md:inline-flex"><Link to={user ? "/add-property" : "/register"}><Plus />أضف عقارك</Link></Button>
+        {!user && <Button asChild variant="ghost" size="sm" className="rounded-full text-xs text-primary"><Link to="/login">تسجيل الدخول</Link></Button>}
+        <DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline" className="h-10 gap-2 rounded-full px-3" aria-label="قائمة الحساب"><Menu /><UserRound /></Button></DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56" dir="rtl">
+            {user && <><DropdownMenuItem disabled>{profile?.full_name || "حسابي"}</DropdownMenuItem><DropdownMenuItem onClick={() => navigate("/dashboard")}><UserRound className="ml-2 h-4 w-4" />لوحتي</DropdownMenuItem>{isAdmin && <DropdownMenuItem onClick={() => navigate("/admin")}><Shield className="ml-2 h-4 w-4" />الإدارة</DropdownMenuItem>}<DropdownMenuSeparator /></>}
+            <DropdownMenuItem onClick={() => navigate("/favorites")}><Heart className="ml-2 h-4 w-4" />المفضلة</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate(user ? "/add-property" : "/register")}><Plus className="ml-2 h-4 w-4" />إضافة عقار</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate(user ? "/add-shared" : "/register")}><Users className="ml-2 h-4 w-4" />إضافة شاغر</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate(user ? "/add-dormitory" : "/register")}><GraduationCap className="ml-2 h-4 w-4" />إضافة داخلية</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate("/properties")}>العقارات</DropdownMenuItem><DropdownMenuItem onClick={() => navigate("/shared-housing")}>الشواغر</DropdownMenuItem><DropdownMenuItem onClick={() => navigate("/dormitories")}>الداخليات</DropdownMenuItem>
+            <DropdownMenuSeparator />{user ? <DropdownMenuItem onClick={async () => { await signOut(); navigate("/"); }}><LogOut className="ml-2 h-4 w-4" />خروج</DropdownMenuItem> : <><DropdownMenuItem onClick={() => navigate("/login")}>تسجيل الدخول</DropdownMenuItem><DropdownMenuItem onClick={() => navigate("/register")}>إنشاء حساب</DropdownMenuItem></>}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
-
-      {/* Mobile nav */}
-      {open && (
-        <div className="md:hidden border-t bg-card p-4 space-y-2 animate-fade-in">
-          <Link to="/properties" onClick={() => setOpen(false)}>
-            <Button variant="ghost" className="w-full justify-start">العقارات</Button>
-          </Link>
-          <Link to="/shared-housing" onClick={() => setOpen(false)}>
-            <Button variant="ghost" className="w-full justify-start">شواغر</Button>
-          </Link>
-          <Link to="/dormitories" onClick={() => setOpen(false)}>
-            <Button variant="ghost" className="w-full justify-start"><GraduationCap className="h-4 w-4 ml-2" />داخليات طلابية</Button>
-          </Link>
-          {user ? (
-            <>
-              <Link to="/add-property" onClick={() => setOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start"><Plus className="h-4 w-4 ml-2" />إضافة عقار</Button>
-              </Link>
-              <Link to="/add-shared" onClick={() => setOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start"><Users className="h-4 w-4 ml-2" />إضافة شاغر</Button>
-              </Link>
-              <Link to="/dashboard" onClick={() => setOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start"><User className="h-4 w-4 ml-2" />لوحتي</Button>
-              </Link>
-              {isAdmin && (
-                <Link to="/admin" onClick={() => setOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start"><Shield className="h-4 w-4 ml-2" />الإدارة</Button>
-                </Link>
-              )}
-              <Button variant="outline" className="w-full" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4 ml-2" />خروج
-              </Button>
-            </>
-          ) : (
-            <Link to="/login" onClick={() => setOpen(false)}>
-              <Button className="w-full">تسجيل الدخول</Button>
-            </Link>
-          )}
-        </div>
-      )}
-    </nav>
-  );
+    </div>
+  </header>;
 }

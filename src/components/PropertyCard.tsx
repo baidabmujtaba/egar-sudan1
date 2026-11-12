@@ -1,187 +1,65 @@
-import { Link } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
-import { MapPin, Phone, MessageCircle, Video, ChevronLeft, ChevronRight, User, Briefcase, Home } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Images, Phone, MessageCircle, ChevronLeft, ChevronRight, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRef, useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
-import { thumb, thumbSrcSet } from "@/lib/image";
+import { supabase } from "@/integrations/supabase/client";
+import ListingImage from "@/components/ListingImage";
+import FavoriteButton from "@/components/FavoriteButton";
 import AdvertiserTag from "@/components/AdvertiserTag";
+import { currencyLabel, periodLabel, listingKey, type Listing } from "@/lib/discovery";
 
-
-interface PropertyCardProps {
-  id: string;
-  title: string;
-  price: number;
-  location: string;
-  property_type: string;
-  phone_number?: string | null;
-  currency?: string;
-  rental_period?: string;
-  video_url?: string | null;
-  images?: { image_url: string }[];
-  advertiser?: { full_name: string; role: string } | null;
-}
-
-export default function PropertyCard({ id, title, price, location, property_type, phone_number, currency, rental_period, video_url, images, advertiser }: PropertyCardProps) {
+type Props = Omit<Listing, "kind"> & { kind?: Listing["kind"] };
+export default function PropertyCard(props: Props) {
+  const item: Listing = { ...props, kind: props.kind || "property" };
   const { user } = useAuth();
   const navigate = useNavigate();
-  const firstImage = images?.[0]?.image_url;
-  const firstImageThumb = thumb(firstImage, { width: 640, quality: 65 });
-  const firstImageSrcSet = thumbSrcSet(firstImage);
-  const posterThumb = thumb(firstImage, { width: 640, quality: 60 });
-  const currencyLabel = currency === "USD" ? "$" : "ج.س";
-  const periodLabel = rental_period === "يومي" ? "/ يومياً" : rental_period === "أسبوعي" ? "/ أسبوعياً" : "/ شهرياً";
-  const cleanPhone = (phone_number || "").replace(/\s+/g, "");
-  const waPhone = cleanPhone.startsWith("0") ? "249" + cleanPhone.slice(1) : cleanPhone;
-  const requireLogin = (e: React.MouseEvent) => {
-    if (!user || !phone_number) {
-      e.preventDefault();
-      e.stopPropagation();
-      navigate("/login");
-      return true;
-    }
-    return false;
-  };
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [open, setOpen] = useState(false);
   const [slide, setSlide] = useState(0);
-  const mediaList: { type: "image" | "video"; url: string }[] = [
-    ...(video_url ? [{ type: "video" as const, url: video_url }] : []),
-    ...(images?.map(i => ({ type: "image" as const, url: i.image_url })) || []),
-  ];
-  const total = mediaList.length;
-  const next = () => setSlide(s => (s + 1) % total);
-  const prev = () => setSlide(s => (s - 1 + total) % total);
-  const openLightbox = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (total === 0) return;
-    setSlide(0);
-    setOpen(true);
-  };
-  const propertyUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/property/${id}`;
-  // Include image URL in message so WhatsApp shows a rich preview
-  const waMessage = [
-    `مرحباً، أستفسر عن العقار: ${title}`,
-    `السعر: ${price.toLocaleString()} ${currencyLabel}`,
-    `الموقع: ${location}`,
-    firstImage ? `صورة: ${firstImage}` : null,
-    `رابط العقار: ${propertyUrl}`,
-  ].filter(Boolean).join("\n");
-
-  return (
-    <div className="group animate-fade-in">
-      <div
-        className="block cursor-pointer"
-        onClick={openLightbox}
-      >
-        <div className="aspect-square sm:aspect-[4/5] bg-muted relative overflow-hidden rounded-2xl">
-          {video_url ? (
-            <video
-              ref={videoRef}
-              src={video_url}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              poster={posterThumb || undefined}
-              className="w-full h-full object-cover"
-            />
-          ) : firstImage ? (
-            <img
-              src={firstImageThumb}
-              srcSet={firstImageSrcSet || undefined}
-              sizes="(max-width: 640px) 50vw, 320px"
-              alt={title}
-              width={640}
-              height={640}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              loading="lazy"
-              decoding="async"
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full text-muted-foreground">لا توجد صورة</div>
-          )}
-          <Badge className="absolute top-3 right-3 bg-background/95 text-foreground hover:bg-background border-0 shadow">{property_type}</Badge>
-          {video_url && (
-            <Badge className="absolute top-3 left-3 bg-foreground/85 text-background border-0 gap-1 backdrop-blur">
-              <Video className="h-3 w-3" /> فيديو
-            </Badge>
-          )}
-        </div>
-        <Link to={`/property/${id}`} onClick={e => e.stopPropagation()} className="block pt-3 space-y-1">
-          <div className="flex items-start justify-between gap-2">
-            <h3 className="font-semibold text-[15px] line-clamp-1">{title}</h3>
-          </div>
-          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-            <MapPin className="h-3.5 w-3.5" /><span className="line-clamp-1">{location}</span>
-          </div>
-          <p className="text-sm pt-1"><span className="font-bold text-foreground">{price.toLocaleString()} {currencyLabel}</span> <span className="text-muted-foreground">{periodLabel}</span></p>
-        </Link>
+  const [contact, setContact] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const cardRef = useRef<HTMLElement>(null);
+  const media = [...(item.images || []).map(image => ({ type: "image", url: image.image_url })), ...(item.video_url ? [{ type: "video", url: item.video_url }] : [])];
+  useEffect(() => {
+    if (!item.video_url || !cardRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0]?.isIntersecting) videoRef.current?.play().catch(() => undefined);
+      else videoRef.current?.pause();
+    }, { threshold: .6 });
+    observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, [item.video_url]);
+  useEffect(() => {
+    if (!open || !user || item.kind === "property") return;
+    let live = true;
+    const table = item.kind === "shared" ? "shared_housing" : "dormitories";
+    supabase.from(table).select("phone_number").eq("id", item.id).single().then(({ data }) => { if (live) setContact(data?.phone_number || null); });
+    return () => { live = false; };
+  }, [open, user, item.id, item.kind]);
+  const showHousing = () => { if (!user) { navigate("/login"); return; } setOpen(true); };
+  const cleanPhone = (contact || "").replace(/\s+/g, "");
+  const waPhone = cleanPhone.startsWith("0") ? `249${cleanPhone.slice(1)}` : cleanPhone.replace(/^\+/, "");
+  const message = `مرحباً، أستفسر عن ${item.title}\nالموقع: ${item.location}\nالسعر: ${item.price.toLocaleString()} ${currencyLabel(item.currency)}${item.images?.[0] ? `\nصورة: ${item.images[0].image_url}` : ""}`;
+  const content = <><div className="aspect-square overflow-hidden rounded-[24px] bg-secondary">
+    {item.video_url ? <video ref={videoRef} src={item.video_url} poster={item.images?.[0]?.image_url} muted loop playsInline preload="metadata" className="h-full w-full object-cover" /> : <ListingImage src={item.images?.[0]?.image_url} alt={item.title} className="transition-transform duration-500 group-hover:scale-[1.025]" />}
+  </div><div className="space-y-1.5 pt-3 text-right"><h3 className="line-clamp-1 text-[15px] font-bold leading-6">{item.title}</h3><p className="line-clamp-1 text-[13px] text-muted-foreground">{item.location}</p><p className="text-[13px]"><strong className="text-[14px] font-bold">{item.price.toLocaleString()} {currencyLabel(item.currency)}</strong><span className="text-muted-foreground"> / {periodLabel(item.rental_period)}</span></p><p className="line-clamp-1 text-xs text-muted-foreground">{item.kind === "property" ? item.property_type : `${item.available_spots || 0} أماكن متاحة${item.beds_per_room ? ` · ${item.beds_per_room} أسرّة / غرفة` : ""}`}</p></div></>;
+  return <article ref={cardRef} className="group relative min-w-0">
+    {item.kind === "property" ? <Link to={`/property/${item.id}`} className="block" aria-label={item.title}>{content}</Link> : <Button variant="ghost" onClick={showHousing} className="block h-auto w-full whitespace-normal p-0 hover:bg-transparent">{content}</Button>}
+    <FavoriteButton listingId={listingKey(item)} className="absolute right-3 top-3" />
+    {item.kind !== "property" && <span className="absolute left-3 top-3 rounded-full bg-card/95 px-3 py-1 text-[11px] font-semibold shadow-sm">{item.property_type}</span>}
+    {media.length > 0 && <Button variant="ghost" size="icon" className="absolute left-3 top-[calc(100cqw-52px)] hidden" aria-label="المعرض" onClick={() => setOpen(true)}><Images /></Button>}
+    {media.length > 0 && <Button variant="secondary" size="sm" className="absolute left-3 top-3 h-8 rounded-full px-2 shadow-sm" aria-label={`عرض صور وفيديو: ${item.title}`} onClick={() => { setSlide(0); setOpen(true); }}>{item.video_url ? <Video /> : <Images />}{media.length}</Button>}
+    {item.advertiser && <AdvertiserTag {...item.advertiser} className="mt-2 !bg-transparent !px-0 !ring-0" />}
+    <Dialog open={open} onOpenChange={setOpen}><DialogContent className="max-h-[90dvh] w-[calc(100%-32px)] max-w-4xl overflow-y-auto rounded-2xl p-0" dir="rtl">
+      <div className="px-6 pb-3 pt-12"><DialogTitle className="tracking-normal">{item.title}</DialogTitle><DialogDescription className="mt-2">{item.location}</DialogDescription></div>
+      {media.length > 0 && <div className="relative aspect-square bg-muted sm:aspect-video">{media[slide]?.type === "video" ? <video src={media[slide]?.url} controls autoPlay playsInline className="h-full w-full object-contain" /> : <ListingImage src={media[slide]?.url} alt={item.title} large className="!object-contain" />}
+        {media.length > 1 && <><Button variant="secondary" size="icon" className="absolute right-3 top-1/2 rounded-full" aria-label="الصورة السابقة" onClick={() => setSlide(s => (s - 1 + media.length) % media.length)}><ChevronRight /></Button><Button variant="secondary" size="icon" className="absolute left-3 top-1/2 rounded-full" aria-label="الصورة التالية" onClick={() => setSlide(s => (s + 1) % media.length)}><ChevronLeft /></Button><span className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-card px-3 py-1 text-xs">{slide + 1} / {media.length}</span></>}
+      </div>}
+      {media.length > 1 && <div className="flex gap-2 overflow-x-auto px-5">{media.map((m, i) => <Button key={m.url} variant="outline" className={`h-14 w-14 shrink-0 overflow-hidden p-0 ${i === slide ? "border-primary" : ""}`} aria-label={`وسائط ${i + 1}`} onClick={() => setSlide(i)}>{m.type === "video" ? <Video /> : <ListingImage src={m.url} alt="" />}</Button>)}</div>}
+      <div className="space-y-4 p-6"><p><strong>{item.price.toLocaleString()} {currencyLabel(item.currency)}</strong> / {periodLabel(item.rental_period)}</p>
+        {item.kind === "property" ? <Button asChild className="rounded-xl"><Link to={`/property/${item.id}`}>عرض التفاصيل</Link></Button> : <><p className="whitespace-pre-line text-sm leading-7 text-muted-foreground">{item.description}</p><div className="flex flex-wrap gap-2 text-sm"><span>{item.available_spots} أماكن متاحة</span>{item.nearby_university && <span>· {item.nearby_university}</span>}{item.meals_included && <span>· وجبات مشمولة</span>}{item.gender && <span>· {item.gender === "male" ? "ذكور" : item.gender === "female" ? "إناث" : "مختلط"}</span>}</div>{item.advertiser && <AdvertiserTag {...item.advertiser} />}{user ? <div className="flex gap-3"><Button asChild variant="outline" disabled={!contact}><a href={`tel:${cleanPhone}`}><Phone />اتصال</a></Button><Button asChild disabled={!contact}><a href={`https://wa.me/${waPhone}?text=${encodeURIComponent(message)}`} target="_blank" rel="noopener noreferrer"><MessageCircle />واتساب</a></Button></div> : <Button asChild><Link to="/login">تسجيل الدخول للتواصل</Link></Button>}</>}
       </div>
-      {advertiser && <AdvertiserTag full_name={advertiser.full_name} role={advertiser.role} className="mt-3" />}
-
-      <div className="pt-3 flex gap-2">
-        <a href={user && phone_number ? `tel:${cleanPhone}` : "#"} className="flex-1" onClick={e => { if (requireLogin(e)) return; e.stopPropagation(); }}>
-          <Button variant="outline" size="sm" className="w-full rounded-full"><Phone className="h-4 w-4 ml-1" />اتصال</Button>
-        </a>
-        <a href={user && phone_number ? `https://wa.me/${waPhone}?text=${encodeURIComponent(waMessage)}` : "#"} target="_blank" rel="noopener noreferrer" className="flex-1" onClick={e => { if (requireLogin(e)) return; e.stopPropagation(); }}>
-          <Button variant="default" size="sm" className="w-full rounded-full bg-[#25D366] hover:bg-[#1ebe5d] text-white"><MessageCircle className="h-4 w-4 ml-1" />واتساب</Button>
-        </a>
-      </div>
-
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-5xl w-[95vw] p-0 bg-black border-0 overflow-hidden">
-          <div className="relative aspect-video bg-black flex items-center justify-center">
-            {mediaList[slide]?.type === "video" ? (
-              <video src={mediaList[slide].url} controls autoPlay playsInline className="w-full h-full object-contain" />
-            ) : (
-              <img src={thumb(mediaList[slide]?.url, { width: 1600, quality: 85, resize: "contain" }) || mediaList[slide]?.url} alt={title} className="w-full h-full object-contain" />
-            )}
-            {total > 1 && (
-              <>
-                <button onClick={prev} aria-label="السابق" className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-foreground rounded-full p-2 shadow">
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-                <button onClick={next} aria-label="التالي" className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-foreground rounded-full p-2 shadow">
-                  <ChevronRight className="h-5 w-5" />
-                </button>
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 text-white text-xs px-3 py-1 rounded-full">
-                  {slide + 1} / {total}
-                </div>
-              </>
-            )}
-          </div>
-          {total > 1 && (
-            <div className="flex gap-2 overflow-x-auto p-3 bg-black">
-              {mediaList.map((m, i) => (
-                <button key={i} onClick={() => setSlide(i)} className={`relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden border-2 ${i === slide ? "border-white" : "border-transparent opacity-60 hover:opacity-100"}`}>
-                  {m.type === "video" ? (
-                    <>
-                      <video src={m.url} muted playsInline className="w-full h-full object-cover" />
-                      <Video className="absolute inset-0 m-auto h-5 w-5 text-white" />
-                    </>
-                  ) : (
-                    <img src={thumb(m.url, { width: 160, quality: 60 })} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
-          <div className="flex items-center justify-between gap-3 p-4 bg-background">
-            <div className="min-w-0">
-              <h3 className="font-semibold truncate">{title}</h3>
-              <p className="text-sm text-muted-foreground truncate">{location} · {price.toLocaleString()} {currencyLabel} {periodLabel}</p>
-            </div>
-            <Link to={`/property/${id}`}>
-              <Button size="sm" className="rounded-full">عرض التفاصيل</Button>
-            </Link>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
+    </DialogContent></Dialog>
+  </article>;
 }
