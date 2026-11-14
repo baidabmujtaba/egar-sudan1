@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import FloatingSupport from "@/components/FloatingSupport";
+import MobileNavigation from "@/components/MobileNavigation";
 
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
@@ -21,6 +22,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Admin = lazy(() => import("./pages/Admin"));
 const EditProperty = lazy(() => import("./pages/EditProperty"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const Favorites = lazy(() => import("./pages/Favorites"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,6 +46,8 @@ const App = () => (
           <Suspense fallback={<Loading />}>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/index" element={<Index />} />
+              <Route path="/favorites" element={<Favorites />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/properties" element={<Properties />} />
@@ -60,6 +64,7 @@ const App = () => (
             </Routes>
           </Suspense>
           <FloatingSupport />
+          <MobileNavigation />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

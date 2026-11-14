@@ -14,8 +14,8 @@ export default function Navbar() {
       <div className="flex items-center gap-2">
         <Button asChild variant="ghost" className="hidden rounded-full md:inline-flex"><Link to={user ? "/add-property" : "/register"}><Plus />أضف عقارك</Link></Button>
         {!user && <Button asChild variant="ghost" size="sm" className="rounded-full text-xs text-primary"><Link to="/login">تسجيل الدخول</Link></Button>}
-        <DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline" className="h-10 gap-2 rounded-full px-3" aria-label="قائمة الحساب"><Menu /><UserRound /></Button></DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56" dir="rtl">
+        <DropdownMenu dir="rtl"><DropdownMenuTrigger asChild><Button variant="outline" className="h-10 gap-2 rounded-full px-3" aria-label="قائمة الحساب"><Menu /><UserRound /></Button></DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
             {user && <><DropdownMenuItem disabled>{profile?.full_name || "حسابي"}</DropdownMenuItem><DropdownMenuItem onClick={() => navigate("/dashboard")}><UserRound className="ml-2 h-4 w-4" />لوحتي</DropdownMenuItem>{isAdmin && <DropdownMenuItem onClick={() => navigate("/admin")}><Shield className="ml-2 h-4 w-4" />الإدارة</DropdownMenuItem>}<DropdownMenuSeparator /></>}
             <DropdownMenuItem onClick={() => navigate("/favorites")}><Heart className="ml-2 h-4 w-4" />المفضلة</DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate(user ? "/add-property" : "/register")}><Plus className="ml-2 h-4 w-4" />إضافة عقار</DropdownMenuItem>

@@ -47,8 +47,7 @@ export default function PropertyCard(props: Props) {
   return <article ref={cardRef} className="group relative min-w-0">
     {item.kind === "property" ? <Link to={`/property/${item.id}`} className="block" aria-label={item.title}>{content}</Link> : <Button variant="ghost" onClick={showHousing} className="block h-auto w-full whitespace-normal p-0 hover:bg-transparent">{content}</Button>}
     <FavoriteButton listingId={listingKey(item)} className="absolute right-3 top-3" />
-    {item.kind !== "property" && <span className="absolute left-3 top-3 rounded-full bg-card/95 px-3 py-1 text-[11px] font-semibold shadow-sm">{item.property_type}</span>}
-    {media.length > 0 && <Button variant="ghost" size="icon" className="absolute left-3 top-[calc(100cqw-52px)] hidden" aria-label="المعرض" onClick={() => setOpen(true)}><Images /></Button>}
+    {item.kind !== "property" && <span className="absolute left-3 top-14 rounded-full bg-card/95 px-3 py-1 text-[11px] font-semibold shadow-sm">{item.property_type}</span>}
     {media.length > 0 && <Button variant="secondary" size="sm" className="absolute left-3 top-3 h-8 rounded-full px-2 shadow-sm" aria-label={`عرض صور وفيديو: ${item.title}`} onClick={() => { setSlide(0); setOpen(true); }}>{item.video_url ? <Video /> : <Images />}{media.length}</Button>}
     {item.advertiser && <AdvertiserTag {...item.advertiser} className="mt-2 !bg-transparent !px-0 !ring-0" />}
     <Dialog open={open} onOpenChange={setOpen}><DialogContent className="max-h-[90dvh] w-[calc(100%-32px)] max-w-4xl overflow-y-auto rounded-2xl p-0" dir="rtl">

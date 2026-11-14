@@ -10,12 +10,12 @@ const ROLE_MAP: Record<string, { label: string; icon: typeof User; classes: stri
   broker: {
     label: "وسيط",
     icon: Briefcase,
-    classes: "bg-amber-500/10 text-amber-700 ring-amber-500/25 dark:text-amber-300",
+    classes: "bg-secondary text-secondary-foreground ring-border",
   },
   owner: {
     label: "المالك",
     icon: Home,
-    classes: "bg-emerald-500/10 text-emerald-700 ring-emerald-500/25 dark:text-emerald-300",
+    classes: "bg-success/10 text-success ring-success/25",
   },
   admin: {
     label: "مشرف",
