@@ -15,6 +15,10 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        search: "search-pill border border-border bg-card text-foreground hover:bg-card",
+        category: "category-pill shrink-0 rounded-full bg-card text-foreground hover:bg-muted aria-pressed:bg-muted",
+        photo: "photo-control rounded-full bg-photo-shade text-photo-foreground hover:bg-photo-shade",
+        roundControl: "rounded-full bg-muted text-foreground hover:bg-accent",
       },
       size: {
         default: "h-10 px-4 py-2",

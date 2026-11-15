@@ -4,6 +4,7 @@ interface Props {
   full_name?: string | null;
   role?: string | null;
   className?: string;
+  compact?: boolean;
 }
 
 const ROLE_MAP: Record<string, { label: string; icon: typeof User; classes: string }> = {
@@ -36,9 +37,13 @@ function initials(name?: string | null) {
   return (parts[0]?.[0] || "") + (parts[1]?.[0] || "");
 }
 
-export default function AdvertiserTag({ full_name, role, className = "" }: Props) {
+export default function AdvertiserTag({ full_name, role, className = "", compact = false }: Props) {
   const meta = ROLE_MAP[role || "tenant"] || ROLE_MAP.tenant;
   const Icon = meta.icon;
+
+  if (compact) return <div className={`flex min-w-0 items-center gap-1 text-[10px] leading-4 text-muted-foreground ${className}`}>
+    <span className="truncate">{full_name || "معلن"}</span><span aria-hidden="true">·</span><span className="shrink-0">{meta.label}</span>
+  </div>;
 
   return (
     <div className={`flex items-center gap-2 rounded-full bg-card/60 ring-1 ring-border px-2 py-1 ${className}`}>

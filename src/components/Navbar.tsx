@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Home, Plus, UserRound, Shield, LogOut, Menu, Heart, Users, GraduationCap } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
-export default function Navbar() {
+export default function Navbar({ browsing = false }: { browsing?: boolean }) {
   const { user, profile, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
-  return <header className="border-b bg-card">
+  return <header className={`border-b bg-card ${browsing ? "hidden md:block" : ""}`}>
     <div className="container flex h-[68px] items-center justify-between gap-3 md:h-20">
       <Link to="/" className="flex shrink-0 items-center gap-2" aria-label="EGARK الرئيسية"><span className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-primary-foreground"><Home className="h-5 w-5" /></span><span className="text-[23px] font-extrabold text-primary">EGARK</span></Link>
       <nav className="hidden items-center gap-1 lg:flex" aria-label="الأقسام"><Button asChild variant="ghost" className="rounded-full"><Link to="/properties">العقارات</Link></Button><Button asChild variant="ghost" className="rounded-full"><Link to="/shared-housing">السكن المشترك</Link></Button><Button asChild variant="ghost" className="rounded-full"><Link to="/dormitories">الداخليات</Link></Button></nav>

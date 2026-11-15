@@ -1,6 +1,9 @@
 import { MessageCircle } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 export default function FloatingSupport() {
+  const { pathname } = useLocation();
+  if (["/", "/index", "/properties", "/shared-housing", "/dormitories", "/favorites"].includes(pathname)) return null;
   const waUrl = "https://wa.me/249116458724?text=" + encodeURIComponent("مرحباً، أحتاج مساعدة من فريق دعم EGARK");
 
   return (

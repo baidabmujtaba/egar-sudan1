@@ -22,6 +22,9 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        "photo-foreground": "hsl(var(--photo-foreground))",
+        "photo-shade": "hsl(var(--photo-shade))",
+        overlay: "hsl(var(--overlay))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

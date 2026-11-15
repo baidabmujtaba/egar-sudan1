@@ -11,6 +11,12 @@ describe("actual listing filters", () => {
     expect(matchesListing(apartment, { ...emptyFilters, type: "شقة" })).toBe(true);
     expect(matchesListing(apartment, { ...emptyFilters, type: "منزل أرضي" })).toBe(false);
   });
+  it("keeps the properties category separate from shared housing and dormitories", () => {
+    const filters = { ...emptyFilters, type: "property" };
+    expect(matchesListing(apartment, filters)).toBe(true);
+    expect(matchesListing({ ...apartment, kind: "shared", property_type: "سكن مشترك" }, filters)).toBe(false);
+    expect(matchesListing({ ...apartment, kind: "dormitory", property_type: "داخلية" }, filters)).toBe(false);
+  });
   it("includes exact budget boundaries and excludes out-of-range prices", () => {
     expect(matchesListing(apartment, { ...emptyFilters, min: "250000", max: "250000" })).toBe(true);
     expect(matchesListing(apartment, { ...emptyFilters, max: "249999" })).toBe(false);
