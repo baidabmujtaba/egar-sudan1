@@ -12,3 +12,7 @@
 - [x] Track phone and WhatsApp clicks from existing listing-card dialogs and property details, excluding support links and personal data.
 - [x] Register the contact event and verify its schema, behavior tests and public mobile/desktop flows.
 - [ ] Verify authenticated contact clicks and live event ingestion: blocked until the user signs in to the preview; automatic session minting cannot match their account, and localhost has no analytics collector.
+
+## Discovery category refinements
+- [x] Remove commercial/office filters, replace the general property category with buildings and give every category a colorful illustrative icon.
+- [x] Verify category and search filtering, cross-page switching and mobile/desktop presentation; 33 tests passed and real listing searches returned exact matches without runtime errors.

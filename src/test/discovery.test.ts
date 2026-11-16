@@ -1,8 +1,37 @@
 import { describe, expect, it } from "vitest";
 import { emptyFilters, matchesListing, toggleSaved, listingKey, type Listing } from "@/lib/discovery";
+import { discoveryCategories } from "@/lib/discovery-categories";
 
 const apartment: Listing = { id: "apt", kind: "property", title: "شقة", location: "أم درمان الحتانة", price: 250000, currency: "SDG", property_type: "شقة" };
 describe("actual listing filters", () => {
+  it("offers buildings instead of the general properties category", () => {
+    const values = discoveryCategories.map(category => category.value);
+    expect(values.filter(value => value === "عمارة")).toHaveLength(1);
+    expect(values).not.toContain("property");
+    const filters = { ...emptyFilters, type: "عمارة" };
+    expect(matchesListing({ ...apartment, property_type: "عمارة" }, filters)).toBe(true);
+    expect(matchesListing(apartment, filters)).toBe(false);
+    expect(matchesListing({ ...apartment, kind: "shared", property_type: "سكن مشترك" }, filters)).toBe(false);
+  });
+  it("does not offer commercial shops as a discovery filter", () => {
+    expect(discoveryCategories.map(category => category.value)).not.toContain("محل تجاري");
+  });
+  it("does not offer offices as a discovery filter", () => {
+    expect(discoveryCategories.map(category => category.value)).not.toContain("مكتب");
+  });
+  it.each(["شقة", "منزل أرضي", "عمارة", "فيلا", "استوديو", "غرفة"])("filters %s by its exact stored type", type => {
+    const filters = { ...emptyFilters, type };
+    expect(matchesListing({ ...apartment, property_type: type }, filters)).toBe(true);
+    expect(matchesListing({ ...apartment, property_type: "مكتب" }, filters)).toBe(false);
+  });
+  it("combines building type, location and budget without admitting other types", () => {
+    const building = { ...apartment, property_type: "عمارة" };
+    const filters = { ...emptyFilters, type: "عمارة", location: "أم درمان", min: "200000", max: "300000" };
+    expect(matchesListing(building, filters)).toBe(true);
+    expect(matchesListing({ ...building, price: 300001 }, filters)).toBe(false);
+    expect(matchesListing({ ...building, location: "كافوري" }, filters)).toBe(false);
+    expect(matchesListing(apartment, filters)).toBe(false);
+  });
   it("matches the selected location and excludes other locations", () => {
     expect(matchesListing(apartment, { ...emptyFilters, location: "أم درمان" })).toBe(true);
     expect(matchesListing(apartment, { ...emptyFilters, location: "كافوري" })).toBe(false);

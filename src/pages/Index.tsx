@@ -44,7 +44,7 @@ export default function Index({ mode = "all" }: { mode?: "all" | "property" | "s
   const title = mode === "shared" ? "السكن المشترك" : mode === "dormitory" ? "الداخليات الطلابية" : mode === "property" ? "كل العقارات" : "نتائج البحث";
   return <div className="discovery-page min-h-screen"><Navbar browsing />
     <div className="discovery-header sticky top-0 z-30 backdrop-blur-md md:border-b">
-      <div className="discovery-container flex justify-center pb-3 pt-3 md:pb-5 md:pt-6"><DiscoverySearch filters={filters} onApply={apply} locations={locations} /></div>
+      <div className="discovery-container flex justify-center pb-3 pt-3 md:pb-5 md:pt-6"><DiscoverySearch filters={filters} onApply={next => apply(next, mode !== "all" && next.type !== "all" && next.type !== mode ? "/" : undefined)} locations={locations} /></div>
       <div className="discovery-container pb-1"><DiscoveryCategories value={filters.type === "all" && mode !== "all" ? mode : filters.type} onChange={type => apply({ ...filters, type, gender: "all", meals: "all" }, mode === "all" ? undefined : "/")} /></div>
     </div>
     <main className="discovery-container pb-8 pt-3 md:pt-8">
