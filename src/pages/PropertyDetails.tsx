@@ -17,7 +17,7 @@ import { currencyLabel, periodLabel } from "@/lib/discovery";
 const SUPPORT_PHONE = "249116458724";
 export default function PropertyDetails() {
   const { id } = useParams();
-  const { user, loading: authLoading } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
   const location = useLocation();
   const [activeImage, setActiveImage] = useState(0);
   const [gallery, setGallery] = useState(false);
@@ -54,7 +54,14 @@ export default function PropertyDetails() {
       {advertiser && <div className="mt-6 border-y py-5"><h2 className="mb-3 text-base font-bold">المعلن</h2><AdvertiserTag {...advertiser} className="!max-w-md !rounded-none !bg-transparent !px-0 !ring-0" /></div>}
       {property.description && <section className="py-6"><h2 className="mb-3 text-lg font-bold">عن العقار</h2><p className="whitespace-pre-line text-sm leading-8 text-muted-foreground">{property.description}</p></section>}
       <div className="border-t pt-5"><h2 className="mb-3 font-bold">الدعم</h2><div className="flex flex-wrap gap-2"><Button asChild variant="ghost" size="sm"><a href={`tel:+${SUPPORT_PHONE}`}><Headphones />اتصال بالدعم</a></Button><Button asChild variant="ghost" size="sm"><a href={`https://wa.me/${SUPPORT_PHONE}`} target="_blank" rel="noopener noreferrer"><MessageCircle />واتساب الدعم</a></Button></div></div>
-    </div><aside className="self-start rounded-2xl border bg-card p-6 shadow-sm md:sticky md:top-6"><p className="text-2xl font-bold">{property.price.toLocaleString()} <span className="text-base">{currencyLabel(property.currency)}</span></p><p className="mt-1 text-sm text-muted-foreground">/ {periodLabel(property.rental_period)}</p><div className="mt-6 space-y-3">{cleanPhone ? <><Button asChild className="h-12 w-full rounded-xl"><a href={`tel:${cleanPhone}`}><Phone />اتصال بالمعلن</a></Button><Button asChild variant="outline" className="h-12 w-full rounded-xl"><a href={`https://wa.me/${waPhone}?text=${encodeURIComponent(waMessage)}`} target="_blank" rel="noopener noreferrer"><MessageCircle />واتساب المعلن</a></Button></> : <p className="text-sm text-muted-foreground">رقم التواصل غير متاح</p>}</div></aside></div>
+    </div><aside className="self-start rounded-2xl border bg-card p-6 shadow-sm md:sticky md:top-6"><p className="text-2xl font-bold">{property.price.toLocaleString()} <span className="text-base">{currencyLabel(property.currency)}</span></p><p className="mt-1 text-sm text-muted-foreground">/ {periodLabel(property.rental_period)}</p><div className="mt-6 space-y-3">{cleanPhone ? <>
+      <Button asChild className="h-12 w-full rounded-xl"><a href={`tel:${cleanPhone}`} onClick={() => {
+        window.__lovableEvents?.track?.("project.advertiser_contact_clicked", { channel: "phone", source: "details", listing_kind: "property", viewer_role: profile?.role || "unknown" });
+      }}><Phone />اتصال بالمعلن</a></Button>
+      <Button asChild variant="outline" className="h-12 w-full rounded-xl"><a href={`https://wa.me/${waPhone}?text=${encodeURIComponent(waMessage)}`} target="_blank" rel="noopener noreferrer" onClick={() => {
+        window.__lovableEvents?.track?.("project.advertiser_contact_clicked", { channel: "whatsapp", source: "details", listing_kind: "property", viewer_role: profile?.role || "unknown" });
+      }}><MessageCircle />واتساب المعلن</a></Button>
+    </> : <p className="text-sm text-muted-foreground">رقم التواصل غير متاح</p>}</div></aside></div>
     {similar.length > 0 && <div className="mt-10 border-t pt-8"><DiscoverySection title="عقارات مشابهة" items={similar} /></div>}
     <Dialog open={gallery} onOpenChange={setGallery}><DialogContent className="w-[calc(100%-24px)] max-w-5xl rounded-2xl p-4" dir="rtl"><DialogTitle className="pr-6 tracking-normal">{property.title}</DialogTitle><DialogDescription className="sr-only">معرض الصور والفيديو</DialogDescription><div className="relative aspect-square bg-secondary sm:aspect-video">{media[activeImage]?.type === "video" ? <video src={media[activeImage]?.url} controls playsInline className="h-full w-full object-contain" /> : <ListingImage src={media[activeImage]?.url} alt={property.title} large className="!object-contain" />}{media.length > 1 && <><Button variant="secondary" size="icon" className="absolute right-2 top-1/2 rounded-full" onClick={prev} aria-label="السابق"><ChevronRight /></Button><Button variant="secondary" size="icon" className="absolute left-2 top-1/2 rounded-full" onClick={next} aria-label="التالي"><ChevronLeft /></Button></>}</div><p className="text-center text-sm text-muted-foreground">{activeImage+1} / {media.length}</p></DialogContent></Dialog>
   </main></div>;

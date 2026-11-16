@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "events": {
+    "project.advertiser_contact_clicked": {
+      "event_schema_version": 1,
+      "description": "A signed-in visitor clicks an advertiser phone or WhatsApp link in an existing listing-card dialog or property details page. Support links are excluded; this measures contact intent, not completed calls or messages.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "channel",
+          "source",
+          "listing_kind",
+          "viewer_role"
+        ],
+        "properties": {
+          "channel": {
+            "type": "string",
+            "enum": [
+              "phone",
+              "whatsapp"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "card",
+              "details"
+            ]
+          },
+          "listing_kind": {
+            "type": "string",
+            "enum": [
+              "property",
+              "shared",
+              "dormitory"
+            ]
+          },
+          "viewer_role": {
+            "type": "string",
+            "enum": [
+              "tenant",
+              "owner",
+              "broker",
+              "admin",
+              "unknown"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

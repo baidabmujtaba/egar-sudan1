@@ -7,3 +7,8 @@
 - [x] Mobile/desktop public browsing checks and focused filter/favorite tests.
 - [ ] Authenticated property details/contact end-to-end check: blocked until the user signs in to the preview; automatic session minting could not match their account.
 - Preserve authentication, approvals, payments and administration; unavailable structured property attributes must not be invented.
+
+## Advertiser contact analytics
+- [x] Track phone and WhatsApp clicks from existing listing-card dialogs and property details, excluding support links and personal data.
+- [x] Register the contact event and verify its schema, behavior tests and public mobile/desktop flows.
+- [ ] Verify authenticated contact clicks and live event ingestion: blocked until the user signs in to the preview; automatic session minting cannot match their account, and localhost has no analytics collector.

@@ -15,7 +15,7 @@ type Props = Omit<Listing, "kind"> & { kind?: Listing["kind"]; compact?: boolean
 export default function PropertyCard(props: Props) {
   const { compact = false, ...listing } = props;
   const item: Listing = { ...listing, kind: props.kind || "property" };
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [slide, setSlide] = useState(0);
@@ -64,7 +64,16 @@ export default function PropertyCard(props: Props) {
       </div>}
       {media.length > 1 && <div className="scrollbar-none flex shrink-0 gap-2 overflow-x-auto px-5 py-3">{media.map((m, i) => <Button key={m.url} variant="outline" className={`h-14 w-14 shrink-0 overflow-hidden p-0 ${i === slide ? "border-primary" : ""}`} aria-label={`وسائط ${i + 1}`} onClick={() => setSlide(i)}>{m.type === "video" ? <Video /> : <ListingImage src={m.url} alt="" />}</Button>)}</div>}
       <div className="shrink-0 space-y-4 p-6"><p><strong>{item.price.toLocaleString()} {currencyLabel(item.currency)}</strong> / {periodLabel(item.rental_period)}</p>
-        {item.kind === "property" ? <Button asChild className="rounded-xl"><Link to={`/property/${item.id}`}>عرض التفاصيل</Link></Button> : <><p className="whitespace-pre-line text-sm leading-7 text-muted-foreground">{item.description}</p><div className="flex flex-wrap gap-2 text-sm"><span>{item.available_spots} أماكن متاحة</span>{item.nearby_university && <span>· {item.nearby_university}</span>}{item.meals_included && <span>· وجبات مشمولة</span>}{item.gender && <span>· {item.gender === "male" ? "ذكور" : item.gender === "female" ? "إناث" : "مختلط"}</span>}</div>{item.advertiser && <AdvertiserTag {...item.advertiser} />}{user ? <div className="flex gap-3"><Button asChild variant="outline" disabled={!contact}><a href={`tel:${cleanPhone}`}><Phone />اتصال</a></Button><Button asChild disabled={!contact}><a href={`https://wa.me/${waPhone}?text=${encodeURIComponent(message)}`} target="_blank" rel="noopener noreferrer"><MessageCircle />واتساب</a></Button></div> : <Button asChild><Link to="/login">تسجيل الدخول للتواصل</Link></Button>}</>}
+        {item.kind === "property" ? <Button asChild className="rounded-xl"><Link to={`/property/${item.id}`}>عرض التفاصيل</Link></Button> : <><p className="whitespace-pre-line text-sm leading-7 text-muted-foreground">{item.description}</p><div className="flex flex-wrap gap-2 text-sm"><span>{item.available_spots} أماكن متاحة</span>{item.nearby_university && <span>· {item.nearby_university}</span>}{item.meals_included && <span>· وجبات مشمولة</span>}{item.gender && <span>· {item.gender === "male" ? "ذكور" : item.gender === "female" ? "إناث" : "مختلط"}</span>}</div>{item.advertiser && <AdvertiserTag {...item.advertiser} />}{user ? <div className="flex gap-3">
+          <Button asChild variant="outline" disabled={!contact}><a href={`tel:${cleanPhone}`} onClick={() => {
+            if (!user || !cleanPhone) return;
+            window.__lovableEvents?.track?.("project.advertiser_contact_clicked", { channel: "phone", source: "card", listing_kind: item.kind, viewer_role: profile?.role || "unknown" });
+          }}><Phone />اتصال</a></Button>
+          <Button asChild disabled={!contact}><a href={`https://wa.me/${waPhone}?text=${encodeURIComponent(message)}`} target="_blank" rel="noopener noreferrer" onClick={() => {
+            if (!user || !cleanPhone) return;
+            window.__lovableEvents?.track?.("project.advertiser_contact_clicked", { channel: "whatsapp", source: "card", listing_kind: item.kind, viewer_role: profile?.role || "unknown" });
+          }}><MessageCircle />واتساب</a></Button>
+        </div> : <Button asChild><Link to="/login">تسجيل الدخول للتواصل</Link></Button>}</>}
       </div>
     </DialogContent></Dialog>
   </article>;
