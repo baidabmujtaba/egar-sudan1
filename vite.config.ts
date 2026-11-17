@@ -48,7 +48,7 @@ export default defineConfig(({ mode }) => ({
             },
           },
           {
-            urlPattern: ({ request }) => request.mode === "navigate",
+            urlPattern: ({ request, url }) => request.mode === "navigate" && !url.pathname.startsWith("/~oauth"),
             handler: "NetworkFirst",
             options: {
               cacheName: "html",

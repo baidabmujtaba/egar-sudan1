@@ -15,6 +15,11 @@
 
     --primary: 224 76% 40%;
     --primary-foreground: 0 0% 100%;
+    --auth-google-background: 0 0% 100%;
+    --auth-google-border: 140 1% 46%;
+    --auth-google-foreground: 0 0% 12%;
+    --auth-apple-background: 0 0% 0%;
+    --auth-apple-foreground: 0 0% 100%;
 
     --secondary: 43 50% 92%;
     --secondary-foreground: 220 20% 10%;

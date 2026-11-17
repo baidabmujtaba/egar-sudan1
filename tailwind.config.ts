@@ -17,6 +17,11 @@ export default {
         cairo: ["Cairo", "sans-serif"],
       },
       colors: {
+        "auth-google-background": "hsl(var(--auth-google-background))",
+        "auth-google-border": "hsl(var(--auth-google-border))",
+        "auth-google-foreground": "hsl(var(--auth-google-foreground))",
+        "auth-apple-background": "hsl(var(--auth-apple-background))",
+        "auth-apple-foreground": "hsl(var(--auth-apple-foreground))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

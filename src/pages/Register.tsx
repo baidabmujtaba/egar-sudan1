@@ -4,16 +4,15 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import { Loader2 } from "lucide-react";
+import SocialSignIn from "@/components/SocialSignIn";
 
 export default function Register() {
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("tenant");
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
   const navigate = useNavigate();
@@ -35,7 +34,7 @@ export default function Register() {
     }
     setLoading(true);
     try {
-      await signUp(cleanPhone, password, fullName.trim(), cleanPhone, role);
+      await signUp(cleanPhone, password, fullName.trim(), cleanPhone);
       toast.success("تم إنشاء الحساب بنجاح");
       navigate("/");
     } catch (err: any) {
@@ -53,12 +52,14 @@ export default function Register() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container flex items-center justify-center py-16">
+      <div className="container flex items-center justify-center py-6 md:py-16">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">إنشاء حساب جديد</CardTitle>
           </CardHeader>
           <CardContent>
+            <SocialSignIn />
+            <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />أو<span className="h-px flex-1 bg-border" /></div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">الاسم الكامل</label>
@@ -71,23 +72,6 @@ export default function Register() {
               <div>
                 <label className="block text-sm font-medium mb-1">كلمة المرور</label>
                 <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">نوع الحساب</label>
-                <RadioGroup value={role} onValueChange={setRole} className="flex gap-4 mt-2">
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="tenant" id="tenant" />
-                    <label htmlFor="tenant" className="text-sm cursor-pointer">مستأجر</label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="owner" id="owner" />
-                    <label htmlFor="owner" className="text-sm cursor-pointer">مالك</label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="broker" id="broker" />
-                    <label htmlFor="broker" className="text-sm cursor-pointer">وسيط</label>
-                  </div>
-                </RadioGroup>
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? <><Loader2 className="h-4 w-4 animate-spin ml-2" />جاري التسجيل...</> : "تسجيل"}

@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import { Loader2 } from "lucide-react";
+import SocialSignIn from "@/components/SocialSignIn";
 
 export default function Login() {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -34,12 +35,14 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container flex items-center justify-center py-16">
+      <div className="container flex items-center justify-center py-6 md:py-16">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">تسجيل الدخول</CardTitle>
           </CardHeader>
           <CardContent>
+            <SocialSignIn destination={location.state?.from} />
+            <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />أو<span className="h-px flex-1 bg-border" /></div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">رقم الهاتف</label>

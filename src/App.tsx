@@ -10,6 +10,7 @@ import FloatingSupport from "@/components/FloatingSupport";
 import MobileNavigation from "@/components/MobileNavigation";
 
 const Login = lazy(() => import("./pages/Login"));
+const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const Register = lazy(() => import("./pages/Register"));
 const Properties = lazy(() => import("./pages/Properties"));
 const PropertyDetails = lazy(() => import("./pages/PropertyDetails"));
@@ -49,6 +50,7 @@ const App = () => (
               <Route path="/index" element={<Index />} />
               <Route path="/favorites" element={<Favorites />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/register" element={<Register />} />
               <Route path="/properties" element={<Properties />} />
               <Route path="/property/:id" element={<PropertyDetails />} />

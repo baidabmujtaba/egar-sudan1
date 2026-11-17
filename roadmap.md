@@ -16,3 +16,8 @@
 ## Discovery category refinements
 - [x] Remove commercial/office filters, replace the general property category with buildings and give every category a colorful illustrative icon.
 - [x] Verify category and search filtering, cross-page switching and mobile/desktop presentation; 33 tests passed and real listing searches returned exact matches without runtime errors.
+
+## Account sign-in updates
+- [ ] Remove role selection at signup while preserving existing profiles and roles.
+- [ ] Enable Google and Apple and add matching buttons to login/signup with safe authenticated return navigation.
+- [ ] Test sign-in controls, redirects and mobile/desktop layout; provider completion requires the user's Google/Apple account.

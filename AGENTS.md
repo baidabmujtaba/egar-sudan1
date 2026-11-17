@@ -5,3 +5,4 @@
 - Scope reference-inspired browsing styles to shared discovery components and page classes; administration, payment forms and approval behavior must retain their existing presentation and logic.
 - Emit advertiser-contact analytics directly from existing contact-link handlers through the injected optional Lovable events global; use only categorical properties so contact measurement excludes personal data and support clicks.
 - Share discovery category values and illustrations between the category rail and search dialog; navigate out of kind-specific browsing pages when a search selects a different listing kind to avoid intersecting incompatible filters.
+- Use managed Lovable social auth from shared provider buttons and a public callback that verifies the user before restoring a sanitized same-origin destination; keep profile creation and existing roles intact and exclude OAuth broker paths from PWA navigation caching.
