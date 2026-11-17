@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import FloatingSupport from "@/components/FloatingSupport";
 import MobileNavigation from "@/components/MobileNavigation";
+import FixedAddProperty from "@/components/FixedAddProperty";
 
 const Login = lazy(() => import("./pages/Login"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
@@ -66,6 +67,7 @@ const App = () => (
             </Routes>
           </Suspense>
           <FloatingSupport />
+          <FixedAddProperty />
           <MobileNavigation />
         </AuthProvider>
       </BrowserRouter>

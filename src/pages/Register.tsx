@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,7 +59,7 @@ export default function Register() {
             <CardTitle className="text-2xl">إنشاء حساب جديد</CardTitle>
           </CardHeader>
           <CardContent>
-            <SocialSignIn />
+            <SocialSignIn destination={location.state?.from} />
             <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />أو<span className="h-px flex-1 bg-border" /></div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -79,7 +80,7 @@ export default function Register() {
             </form>
             <p className="text-center text-sm mt-4 text-muted-foreground">
               لديك حساب بالفعل؟{" "}
-              <Link to="/login" className="text-primary font-medium">سجل دخولك</Link>
+              <Link to="/login" state={location.state} className="text-primary font-medium">سجل دخولك</Link>
             </p>
           </CardContent>
         </Card>

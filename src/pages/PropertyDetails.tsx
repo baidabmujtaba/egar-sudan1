@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Navigate, useLocation, Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,19 +18,19 @@ const SUPPORT_PHONE = "249116458724";
 export default function PropertyDetails() {
   const { id } = useParams();
   const { user, profile, loading: authLoading } = useAuth();
-  const location = useLocation();
   const [activeImage, setActiveImage] = useState(0);
   const [gallery, setGallery] = useState(false);
   useEffect(() => { setActiveImage(0); setGallery(false); window.scrollTo(0,0); }, [id]);
-  const { data: property, isLoading, isError, refetch } = useQuery({ queryKey: ["property-detail", id, user?.id], enabled: Boolean(user && id), queryFn: async () => {
-    if (!id || !user) return null;
-    const { data, error } = await supabase.from("properties").select("*, property_images(image_url)").eq("id", id).maybeSingle();
+  const { data: property, isLoading, isError, refetch } = useQuery({ queryKey: ["property-detail", id, user?.id], enabled: Boolean(id) && !authLoading, queryFn: async () => {
+    if (!id) return null;
+    let query = supabase.from("properties").select("id,title,price,location,description,phone_number,property_type,currency,rental_period,video_url,property_images(image_url)").eq("id", id);
+    if (!user) query = query.eq("status", "approved");
+    const { data, error } = await query.maybeSingle();
     if (error) throw error;
     return data;
   } });
   const { data: listings = [] } = useDiscovery();
   if (authLoading) return <div className="min-h-screen"><Navbar /><div className="container py-8"><div className="aspect-video animate-pulse rounded-[24px] bg-secondary" /></div></div>;
-  if (!user) return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   if (isLoading) return <div className="min-h-screen"><Navbar /><div className="container py-8"><div className="aspect-video animate-pulse rounded-[24px] bg-secondary" /></div></div>;
   if (isError) return <div><Navbar /><div className="container py-16 text-center"><p className="mb-5">تعذر تحميل العقار</p><Button onClick={() => refetch()}>إعادة المحاولة</Button></div></div>;
   if (!property) return <div><Navbar /><div className="container py-16 text-center"><h1 className="mb-5 text-xl font-bold">العقار غير موجود</h1><Button asChild variant="outline"><Link to="/">العودة للتصفح</Link></Button></div></div>;
@@ -56,10 +56,10 @@ export default function PropertyDetails() {
       <div className="border-t pt-5"><h2 className="mb-3 font-bold">الدعم</h2><div className="flex flex-wrap gap-2"><Button asChild variant="ghost" size="sm"><a href={`tel:+${SUPPORT_PHONE}`}><Headphones />اتصال بالدعم</a></Button><Button asChild variant="ghost" size="sm"><a href={`https://wa.me/${SUPPORT_PHONE}`} target="_blank" rel="noopener noreferrer"><MessageCircle />واتساب الدعم</a></Button></div></div>
     </div><aside className="self-start rounded-2xl border bg-card p-6 shadow-sm md:sticky md:top-6"><p className="text-2xl font-bold">{property.price.toLocaleString()} <span className="text-base">{currencyLabel(property.currency)}</span></p><p className="mt-1 text-sm text-muted-foreground">/ {periodLabel(property.rental_period)}</p><div className="mt-6 space-y-3">{cleanPhone ? <>
       <Button asChild className="h-12 w-full rounded-xl"><a href={`tel:${cleanPhone}`} onClick={() => {
-        window.__lovableEvents?.track?.("project.advertiser_contact_clicked", { channel: "phone", source: "details", listing_kind: "property", viewer_role: profile?.role || "unknown" });
+        window.__lovableEvents?.track?.("project.advertiser_contact_clicked", { channel: "phone", source: "details", listing_kind: "property", viewer_role: user ? profile?.role || "unknown" : "visitor" });
       }}><Phone />اتصال بالمعلن</a></Button>
       <Button asChild variant="outline" className="h-12 w-full rounded-xl"><a href={`https://wa.me/${waPhone}?text=${encodeURIComponent(waMessage)}`} target="_blank" rel="noopener noreferrer" onClick={() => {
-        window.__lovableEvents?.track?.("project.advertiser_contact_clicked", { channel: "whatsapp", source: "details", listing_kind: "property", viewer_role: profile?.role || "unknown" });
+        window.__lovableEvents?.track?.("project.advertiser_contact_clicked", { channel: "whatsapp", source: "details", listing_kind: "property", viewer_role: user ? profile?.role || "unknown" : "visitor" });
       }}><MessageCircle />واتساب المعلن</a></Button>
     </> : <p className="text-sm text-muted-foreground">رقم التواصل غير متاح</p>}</div></aside></div>
     {similar.length > 0 && <div className="mt-10 border-t pt-8"><DiscoverySection title="عقارات مشابهة" items={similar} /></div>}

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "events": {
     "project.advertiser_contact_clicked": {
-      "event_schema_version": 1,
-      "description": "A signed-in visitor clicks an advertiser phone or WhatsApp link in an existing listing-card dialog or property details page. Support links are excluded; this measures contact intent, not completed calls or messages.",
+      "event_schema_version": 2,
+      "description": "A visitor clicks an advertiser phone or WhatsApp link in an approved listing-card dialog or property details page. Signed-out visitors are included. Support links are excluded; this measures contact intent, not completed calls or messages.",
       "privacy": {
         "contains_pii": false,
         "purpose": "product_analytics"
@@ -47,7 +47,8 @@
               "owner",
               "broker",
               "admin",
-              "unknown"
+              "unknown",
+              "visitor"
             ]
           }
         }

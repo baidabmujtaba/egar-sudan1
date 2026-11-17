@@ -100,8 +100,10 @@
 .photo-heart-saved { fill: hsl(var(--primary)); }
 .mobile-navigation { padding-bottom: env(safe-area-inset-bottom, 0px); }
 .support-link { bottom: calc(82px + env(safe-area-inset-bottom, 0px)); }
+.add-property-action { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); }
 .search-dialog { border-radius: 24px; }
 @media (min-width: 768px) {
+  .add-property-action { bottom: 24px; }
   .discovery-container { padding-inline: 40px; }
   .category-track { margin-inline: 0; padding-inline: 0; }
   .discovery-track { margin-inline: 0; padding-inline: 0; scroll-padding-inline: 0; }

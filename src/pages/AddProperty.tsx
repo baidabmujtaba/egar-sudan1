@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { Loader2, Video, X, Landmark, Receipt } from "lucide-react";
 
 export default function AddProperty() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<File[]>([]);
@@ -36,6 +36,7 @@ export default function AddProperty() {
   });
 
 
+  if (authLoading) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   if (!user) {
     return <Navigate to="/register" replace state={{ from: "/add-property" }} />;
   }

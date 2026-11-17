@@ -23,3 +23,8 @@
 - [x] Enable Google and Apple and add matching buttons to login/signup with safe authenticated return navigation.
 - [x] Test sign-in controls, authenticated callback return and mobile/desktop layout; 40 focused tests passed.
 - [ ] Verify full Google/Apple account authorization: requires the user's provider account; provider settings and the authenticated callback were verified separately.
+
+## Public advertiser contact and listing action
+- [ ] Add a fixed, prominent add-property action on public browsing pages, retaining sign-in for listing submission.
+- [ ] Open approved listing details and advertiser contact to signed-out visitors while protecting unapproved listings and payment/profile data.
+- [ ] Update contact analytics and test public browsing, contact, permissions and the add-property flow on mobile/desktop.

@@ -23,6 +23,7 @@ const state = vi.hoisted(() => ({
     video_url: null,
   },
 }));
+const contactQuery = vi.hoisted(() => ({ eq: vi.fn() }));
 
 vi.mock("@/contexts/AuthContext", () => ({
   useAuth: () => ({
@@ -36,7 +37,11 @@ vi.mock("@tanstack/react-query", () => ({
 }));
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
-    from: () => ({ select: () => ({ eq: () => ({ single: async () => ({ data: { phone_number: state.contact } }) }) }) }),
+    from: () => ({ select: () => {
+      const query = { eq: contactQuery.eq, single: async () => ({ data: { phone_number: state.contact } }) };
+      contactQuery.eq.mockReturnValue(query);
+      return query;
+    } }),
   },
 }));
 vi.mock("@/hooks/use-discovery", () => ({ useDiscovery: () => ({ data: [] }) }));
@@ -63,9 +68,9 @@ async function renderCard(kind: "shared" | "dormitory" = "shared") {
   render(<MemoryRouter><PropertyCard id="test-housing" kind={kind} title="Test housing" location="Private location" price={150000} property_type="سكن مشترك" /></MemoryRouter>);
   fireEvent.click(screen.getByRole("button", { name: /^Test housing/ }));
   await screen.findByRole("dialog");
-  if (state.signedIn && state.contact) {
+  if (state.contact) {
     await waitFor(() => expect(screen.getByRole("link", { name: "اتصال" })).toHaveAttribute("href", "tel:0912345678"));
-  }
+  } else await screen.findByText("رقم التواصل غير متاح");
 }
 
 beforeEach(() => {
@@ -75,6 +80,7 @@ beforeEach(() => {
   state.contact = "0912345678";
   state.property.phone_number = "0912345678";
   track.mockClear();
+  contactQuery.eq.mockClear();
   window.__lovableEvents = { track };
   window.scrollTo = vi.fn();
   document.addEventListener("click", preventLinkNavigation);
@@ -140,18 +146,43 @@ describe("advertiser contact intent", () => {
     expect(track).not.toHaveBeenCalled();
   });
 
-  it("never emits a contact when property details require signing in", () => {
+  it("allows signed-out visitors to contact advertisers from property details", () => {
     state.signedIn = false;
     renderDetails();
-    expect(track).not.toHaveBeenCalled();
-    expect(screen.getByText("Signed out")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("link", { name: "اتصال بالمعلن" }));
+    fireEvent.click(screen.getByRole("link", { name: "واتساب المعلن" }));
+    expect(track.mock.calls).toEqual([
+      [eventName, { channel: "phone", source: "details", listing_kind: "property", viewer_role: "visitor" }],
+      [eventName, { channel: "whatsapp", source: "details", listing_kind: "property", viewer_role: "visitor" }],
+    ]);
   });
 
-  it("does not count missing card phone numbers even if a disabled link receives a click", async () => {
-    state.contact = null;
-    await renderCard();
+  it.each(["shared", "dormitory"] as const)("allows signed-out visitors to contact approved %s advertisers", async kind => {
+    state.signedIn = false;
+    await renderCard(kind);
     fireEvent.click(screen.getByRole("link", { name: "اتصال" }));
     fireEvent.click(screen.getByRole("link", { name: "واتساب" }));
+    expect(track.mock.calls).toEqual([
+      [eventName, { channel: "phone", source: "card", listing_kind: kind, viewer_role: "visitor" }],
+      [eventName, { channel: "whatsapp", source: "card", listing_kind: kind, viewer_role: "visitor" }],
+    ]);
+    expect(contactQuery.eq).toHaveBeenCalledWith("status", "approved");
+  });
+
+  it("allows signed-out visitors to contact from a property gallery card", async () => {
+    state.signedIn = false;
+    render(<MemoryRouter><PropertyCard id="test-property" title="Test property" location="Test location" price={250000} property_type="شقة" images={[{ image_url: "test-image.jpg" }]} /></MemoryRouter>);
+    fireEvent.click(screen.getByRole("button", { name: "عرض صور وفيديو: Test property" }));
+    await waitFor(() => expect(screen.getByRole("link", { name: "اتصال" })).toHaveAttribute("href", "tel:0912345678"));
+    fireEvent.click(screen.getByRole("link", { name: "اتصال" }));
+    expect(track).toHaveBeenCalledWith(eventName, { channel: "phone", source: "card", listing_kind: "property", viewer_role: "visitor" });
+  });
+
+  it("does not expose unusable links when a card phone number is missing", async () => {
+    state.contact = null;
+    await renderCard();
+    expect(screen.queryByRole("link", { name: "اتصال" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "واتساب" })).not.toBeInTheDocument();
     expect(track).not.toHaveBeenCalled();
   });
 
