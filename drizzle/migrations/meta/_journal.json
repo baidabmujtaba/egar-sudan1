@@ -8,6 +8,20 @@
       "when": 1794893211472,
       "tag": "0000_public_listing_contact_access",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794993529568,
+      "tag": "0001_restrict_payment_settings_to_signed_in_users",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794993599648,
+      "tag": "0002_protect_payment_settings_with_scoped_instructions",
+      "breakpoints": true
     }
   ]
 }

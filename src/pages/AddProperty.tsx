@@ -29,8 +29,15 @@ export default function AddProperty() {
   }, [videoPreview]);
   const [pay, setPay] = useState<any | null>(null);
   useEffect(() => {
-    supabase.from("payment_settings").select("*").limit(1).maybeSingle().then(({ data }) => setPay(data));
-  }, []);
+    setPay(null);
+    if (authLoading || !user?.id) return;
+
+    let active = true;
+    supabase.rpc("get_listing_payment_instructions").maybeSingle().then(({ data }) => {
+      if (active) setPay(data);
+    });
+    return () => { active = false; };
+  }, [authLoading, user?.id]);
   const [form, setForm] = useState({
     title: "", price: "", location: "", description: "", phone_number: "", property_type: "شقة", currency: "SDG", rental_period: "شهري",
   });

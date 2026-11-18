@@ -333,6 +333,18 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_listing_payment_instructions: {
+        Args: never
+        Returns: {
+          account_name: string
+          account_number: string
+          bank_name: string
+          currency: string
+          instructions: string
+          listing_price: number
+          payment_required: boolean
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
