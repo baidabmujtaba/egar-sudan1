@@ -25,6 +25,6 @@
 - [ ] Verify full Google/Apple account authorization: requires the user's provider account; provider settings and the authenticated callback were verified separately.
 
 ## Public advertiser contact and listing action
-- [ ] Add a fixed, prominent add-property action on public browsing pages, retaining sign-in for listing submission.
-- [ ] Open approved listing details and advertiser contact to signed-out visitors while protecting unapproved listings and payment/profile data.
-- [ ] Update contact analytics and test public browsing, contact, permissions and the add-property flow on mobile/desktop.
+- [x] Add a fixed, prominent add-property action on public browsing pages, retaining sign-in for listing submission.
+- [x] Open approved listing details and advertiser contact to signed-out visitors while protecting unapproved listings and payment/profile data.
+- [x] Update contact analytics and verify public browsing, contact, permissions and the add-property entry flow on mobile/desktop; 49 tests passed, anonymous write/receipt access was denied and unapproved rows were hidden.
