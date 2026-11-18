@@ -13,7 +13,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 20% 10%;
 
-    --primary: 224 76% 40%;
+    --primary: 350 61% 48%;
     --primary-foreground: 0 0% 100%;
     --auth-google-background: 0 0% 100%;
     --auth-google-border: 140 1% 46%;
@@ -27,8 +27,8 @@
     --muted: 220 14% 96%;
     --muted-foreground: 220 10% 46%;
 
-    --accent: 224 76% 95%;
-    --accent-foreground: 224 76% 40%;
+    --accent: 350 70% 96%;
+    --accent-foreground: 350 61% 40%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -41,7 +41,7 @@
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 224 76% 40%;
+    --ring: 350 61% 48%;
 
     --browse-background: 0 0% 100%;
     --browse-foreground: 0 0% 13%;
@@ -124,13 +124,13 @@
 
 @layer utilities {
   .gradient-primary {
-    background: linear-gradient(135deg, hsl(224, 76%, 40%), hsl(224, 76%, 55%));
+    background: linear-gradient(135deg, hsl(350, 61%, 48%), hsl(350, 66%, 58%));
   }
   .gradient-hero {
-    background: linear-gradient(135deg, hsl(224, 76%, 35%), hsl(224, 76%, 50%), hsl(200, 80%, 55%));
+    background: linear-gradient(135deg, hsl(350, 61%, 42%), hsl(350, 66%, 55%), hsl(15, 85%, 60%));
   }
   .text-gradient {
-    background: linear-gradient(135deg, hsl(224, 76%, 40%), hsl(200, 80%, 50%));
+    background: linear-gradient(135deg, hsl(350, 61%, 45%), hsl(15, 80%, 55%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
